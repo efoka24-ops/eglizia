@@ -5,7 +5,10 @@
     "email": "contact@eglizia.cm",
     "phone": "+237 XXX XXX XXX",
     "address": "Yaoundé, Cameroun",
-    "description": "Une communauté accueillante dédiée au service de Dieu et au service du prochain."
+    "description": "Une communauté accueillante dédiée au service de Dieu et au service du prochain.",
+    "logo": "/logo.png",
+    "scripture": "Mat 11:28",
+    "scriptureText": "Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos."
   },
   "services": [
     {

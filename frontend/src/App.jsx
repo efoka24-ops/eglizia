@@ -51,7 +51,16 @@ export default function App() {
       <header className="bg-gradient-to-r from-church-600 to-church-700 text-white shadow-lg">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <div className="text-2xl font-bold">🙏 {church?.name || 'Eglizia'}</div>
+            <div className="flex items-center gap-3">
+              {/* Logo */}
+              <div className="w-12 h-12 bg-white rounded-full p-1 flex items-center justify-center shadow-md">
+                <span className="text-2xl">✝️</span>
+              </div>
+              <div>
+                <div className="text-2xl font-bold">{church?.name || 'Eglizia'}</div>
+                <div className="text-xs text-church-200">{church?.scripture || 'Mat 11:28'}</div>
+              </div>
+            </div>
             <div className="space-x-6">
               <a href="#services" className="hover:text-church-200 transition">Services</a>
               <a href="#events" className="hover:text-church-200 transition">Événements</a>
@@ -66,7 +75,11 @@ export default function App() {
       <section className="bg-gradient-to-br from-church-50 to-church-100 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-bold text-church-900 mb-4">{church?.name}</h1>
-          <p className="text-xl text-church-700 mb-8">{church?.tagline}</p>
+          <p className="text-xl text-church-700 mb-2">{church?.tagline}</p>
+          <div className="bg-white/50 backdrop-blur-sm rounded-lg p-6 mb-8 max-w-2xl mx-auto border-l-4 border-church-600">
+            <p className="text-sm text-church-600 font-semibold mb-2">📖 {church?.scripture}</p>
+            <p className="text-gray-700 italic">{church?.scriptureText}</p>
+          </div>
           <p className="max-w-2xl mx-auto text-church-600">{church?.description}</p>
         </div>
       </section>
