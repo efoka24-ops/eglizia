@@ -1,0 +1,147 @@
+{
+  "church": {
+    "name": "Eglizia",
+    "tagline": "Église de foi, d'amour et de communion",
+    "email": "contact@eglizia.cm",
+    "phone": "+237 XXX XXX XXX",
+    "address": "Yaoundé, Cameroun",
+    "description": "Une communauté accueillante dédiée au service de Dieu et au service du prochain."
+  },
+  "services": [
+    {
+      "id": 1,
+      "day": "Dimanche",
+      "time": "09:00",
+      "type": "Service principal",
+      "description": "Culte d'adoration et prédication",
+      "duration": "2 heures"
+    },
+    {
+      "id": 2,
+      "day": "Mercredi",
+      "time": "19:00",
+      "type": "Étude biblique",
+      "description": "Étude approfondie de la Parole de Dieu",
+      "duration": "1.5 heures"
+    },
+    {
+      "id": 3,
+      "day": "Vendredi",
+      "time": "20:00",
+      "type": "Prière et intercession",
+      "description": "Nuit de prière pour l'intercession",
+      "duration": "2 heures"
+    }
+  ],
+  "leadership": [
+    {
+      "id": 1,
+      "name": "Pasteur Principal",
+      "title": "Pasteur Principal",
+      "bio": "Serviteur de Dieu avec plus de 20 ans d'expérience dans le ministère.",
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      "email": "pastor@eglizia.cm",
+      "phone": "+237 XXX XXX XXX",
+      "specialties": [
+        "Prédication",
+        "Pastorat",
+        "Conseil spirituel"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Co-Pasteur",
+      "title": "Co-Pasteur",
+      "bio": "Collaborateur dans la vision de l'église, spécialisé dans le ministère des jeunes.",
+      "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop",
+      "email": "copastor@eglizia.cm",
+      "phone": "+237 XXX XXX XXX",
+      "specialties": [
+        "Ministère des jeunes",
+        "Musique",
+        "Animation"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "title": "Conférence spirituelle",
+      "date": "2026-02-15",
+      "time": "10:00",
+      "location": "Salle principale",
+      "description": "Conférence sur la croissance spirituelle",
+      "capacity": 200,
+      "registered": 45
+    },
+    {
+      "id": 2,
+      "title": "Réconciliation communautaire",
+      "date": "2026-03-01",
+      "time": "14:00",
+      "location": "Cour de l'église",
+      "description": "Événement communautaire d'amour et de réconciliation",
+      "capacity": 500,
+      "registered": 120
+    },
+    {
+      "id": 3,
+      "title": "Culte spécial - Dimanche de Pâques",
+      "date": "2026-04-20",
+      "time": "08:00",
+      "location": "Salle principale",
+      "description": "Culte spécial de célébration de la résurrection",
+      "capacity": 300,
+      "registered": 200
+    }
+  ],
+  "news": [
+    {
+      "id": 1,
+      "title": "Bienvenue sur le site d'Eglizia",
+      "date": "2026-01-11",
+      "content": "Nous sommes heureux de vous accueillir sur notre nouveau site web. Suivez-nous pour rester informé de tous nos événements.",
+      "image": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&h=600&fit=crop"
+    },
+    {
+      "id": 2,
+      "title": "Nouveau groupe de jeunes",
+      "date": "2026-01-10",
+      "content": "Un nouveau groupe de jeunes a été lancé pour les 18-35 ans. Réunion tous les samedis à 18h.",
+      "image": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=600&fit=crop"
+    }
+  ],
+  "testimonies": [
+    {
+      "id": 1,
+      "name": "Jean Dupont",
+      "title": "Membre",
+      "testimony": "Eglizia m'a aidé à trouver la paix et la joie dans ma vie. Une communauté accueillante!",
+      "rating": 5,
+      "date": "2026-01-05"
+    },
+    {
+      "id": 2,
+      "name": "Marie Ndiaye",
+      "title": "Membre",
+      "testimony": "Les enseignements bibliques sont profonds et pertinents. Fortement recommandé!",
+      "rating": 5,
+      "date": "2026-01-08"
+    }
+  ],
+  "contacts": [],
+  "settings": {
+    "siteTitle": "Eglizia - Église communautaire",
+    "tagline": "Église de foi, d'amour et de communion",
+    "theme": "light",
+    "primaryColor": "#8B5CF6",
+    "address": "Yaoundé, Cameroun",
+    "email": "contact@eglizia.cm",
+    "phone": "+237 XXX XXX XXX",
+    "socialMedia": {
+      "facebook": "https://facebook.com/eglizia",
+      "instagram": "https://instagram.com/eglizia",
+      "youtube": "https://youtube.com/eglizia"
+    }
+  }
+}

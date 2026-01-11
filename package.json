@@ -1,0 +1,16 @@
+{
+  "name": "eglizia",
+  "version": "1.0.0",
+  "description": "Site web pour Eglizia - Église communautaire",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd backend && node server.js",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && node server.js"
+  },
+  "keywords": ["church", "religion", "community", "faith"],
+  "author": "Emmanuel Foka",
+  "license": "MIT"
+}
