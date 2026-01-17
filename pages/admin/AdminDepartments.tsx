@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import type { Department } from '@/lib/entities';
+import type { Department } from '@/entities';
 
 export default function AdminDepartments() {
   const [sidebarOpen, setSidebarOpen] = useState(true);

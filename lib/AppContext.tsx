@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { mockMembers, mockEvents, mockAnnouncements, mockDepartments, mockLiveStreams, mockPreachings } from '@/lib/mockData'
-import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony } from '@/lib/entities'
+import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony } from '@/entities'
 
 interface AppContextType {
   // Members

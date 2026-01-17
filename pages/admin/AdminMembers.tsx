@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAppContext } from '@/lib/AppContext';
-import type { Member } from '@/lib/entities';
+import type { Member } from '@/entities';
 
 const MEMBER_ROLES = [
   { value: 'pastor', label: 'Pasteur Principal' },

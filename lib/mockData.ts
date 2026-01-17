@@ -5,7 +5,7 @@ import type {
   Department,
   LiveStream,
   Preaching,
-} from '@/lib/entities'
+} from '@/entities'
 
 export const mockEvents: Event[] = [
   {

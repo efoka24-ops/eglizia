@@ -11,7 +11,7 @@ import type {
   Attendance, 
   Announcement, 
   LiveStream 
-} from '@/lib/entities'
+} from '@/entities'
 
 // This would be your actual Base44 SDK initialization
 // For now, we're creating a mock implementation
