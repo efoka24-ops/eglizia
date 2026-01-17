@@ -9,42 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppContext } from '@/lib/AppContext';
 
-const sermons = [
-  {
-    id: 1,
-    title: 'La Puissance de la Restauration',
-    preacher: 'Pasteur Jean-Marie Nkosi',
-    reference: 'Jérémie 30:17',
-    date: '2024-01-15',
-    duration: '45:30',
-    type: 'Vidéo',
-    thumbnail: 'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=500&q=80',
-    description: 'Un message puissant sur comment Dieu peut restaurer nos vies brisées.',
-  },
-  {
-    id: 2,
-    title: 'La Foi en Action',
-    preacher: 'Pasteure Jeannine Kasongo',
-    reference: 'Jacques 2:26',
-    date: '2024-01-08',
-    duration: '38:45',
-    type: 'Vidéo',
-    thumbnail: 'https://images.unsplash.com/photo-1507842217343-583f1270b3eb?w=500&q=80',
-    description: 'Explorer comment notre foi doit se manifester dans nos actions quotidiennes.',
-  },
-  {
-    id: 3,
-    title: 'La Liberté en Christ',
-    preacher: 'Pasteur David Kamba',
-    reference: 'Galates 5:1',
-    date: '2024-01-01',
-    duration: '42:15',
-    type: 'Vidéo',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&q=80',
-    description: 'Découvrez la véritable liberté que nous avons en Jésus-Christ.',
-  },
-];
-
 export default function Predications() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState('tous');
