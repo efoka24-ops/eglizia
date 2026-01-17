@@ -7,7 +7,7 @@ const Toaster = ({
   ...props
 }: React.ComponentProps<typeof Sonner>) => {
   const { theme } = useTheme()
-  const themeValue = (theme || "system") as const
+  const themeValue: "light" | "dark" | "system" = (theme as "light" | "dark" | "system" | null) || "system"
 
   return (
     (<Sonner
