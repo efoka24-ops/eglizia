@@ -2,58 +2,77 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, MoreVertical, Trash2, Edit2, Bell, Search, LogOut, User } from 'lucide-react';
+import { Plus, MoreVertical, Trash2, Edit2, Bell, Search, LogOut, User, Users, Gift, Heart, CheckCircle, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import StatsCard from '@/components/admin/StatsCard';
 import { useAppContext } from '@/lib/AppContext';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [showNewAnnouncement, setShowNewAnnouncement] = useState(false);
-  const { members, events, announcements, preachings } = useAppContext();
+  const { 
+    members = [], 
+    events = [], 
+    announcements = [], 
+    preachings = [], 
+    prayerRequests = [],
+    finances = []
+  } = useAppContext();
 
+  // Stats cards with real data
   const stats = [
-    { icon: 'users', title: 'Membres', value: String(members.length), trend: '+12%' },
-    { icon: 'gift', title: 'Événements', value: String(events.length), trend: '+8%' },
-    { icon: 'pray', title: 'Annonces', value: String(announcements.length), trend: '+24%' },
-    { icon: 'check', title: 'Prédications', value: String(preachings.length), trend: '-3%' },
+    { icon: Users, title: 'Membres', value: String(members.length || 0), trend: '+12%' },
+    { icon: Gift, title: 'Événements', value: String(events.length || 0), trend: '+8%' },
+    { icon: Heart, title: 'Annonces', value: String(announcements.length || 0), trend: '+24%' },
+    { icon: CheckCircle, title: 'Prédications', value: String(preachings.length || 0), trend: '-3%' },
   ];
 
-  const recentPrayers = [
-    { id: 1, name: 'Jean', subject: 'Santé familiale', category: 'Santé', urgent: true },
-    { id: 2, name: 'Marie', subject: 'Situation professionnelle', category: 'Travail', urgent: false },
-    { id: 3, name: 'David', subject: 'Guidance spirituelle', category: 'Sagesse', urgent: false },
-    { id: 4, name: 'Sarah', subject: 'Restauration familiale', category: 'Famille', urgent: true },
-  ];
+  // Get recent prayer requests from context
+  const recentPrayers = (prayerRequests || [])
+    .slice()
+    .reverse()
+    .slice(0, 4)
+    .map((prayer: any) => ({
+      id: prayer.id,
+      name: prayer.name,
+      subject: prayer.title,
+      category: prayer.category,
+      urgent: prayer.category === 'Urgence',
+    }));
 
-  const recentDonations = [
-    { donor: 'Anonyme', type: 'Offrande', amount: '$250', date: 'Aujourd\'hui' },
-    { donor: 'Jean Nkosi', type: 'Dîme', amount: '$150', date: 'Hier' },
-    { donor: 'Marie K.', type: 'Don spécial', amount: '$500', date: '2 jours' },
-  ];
+  // Get upcoming events from context
+  const upcomingEvents = (events || [])
+    .filter((event: any) => new Date(event.date) > new Date())
+    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 3)
+    .map((event: any) => ({
+      title: event.title,
+      date: new Date(event.date).toLocaleDateString('fr-FR', { weekday: 'long', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      icon: '⛪',
+    }));
 
-  const upcomingEvents = [
-    { title: 'Service Principal', date: 'Dimanche 14:00', icon: '⛪' },
-    { title: 'Jeûne & Prière', date: 'Lundi 06:00', icon: '🙏' },
-    { title: 'Conférence Femmes', date: 'Samedi 14:00', icon: '👩' },
+  // Get recent donations from context
+  const recentDonations = (finances || [])
+    .filter((f: any) => f.type === 'donation' || f.type === 'Don')
+    .slice()
+    .reverse()
+    .slice(0, 5)
+    .map((donation: any) => ({
+      donor: donation.donor_name || 'Donateur',
+      type: donation.donation_type || 'Don',
+      amount: `$${donation.amount || 0}`,
+      date: new Date(donation.date).toLocaleDateString('fr-FR'),
+    }));
+
+  // Quick actions
+  const quickActions = [
+    { label: 'Ajouter Membre', icon: '👤', route: '/admin/members' },
+    { label: 'Créer Événement', icon: '📅', route: '/admin/events' },
+    { label: 'Publier Annonce', icon: '📢', route: '/admin/announcements' },
+    { label: 'Enregistrer Don', icon: '💰', route: '/admin/finances' },
   ];
 
   return (
@@ -99,19 +118,31 @@ export default function Dashboard() {
                 animate={{ opacity: 1, x: 0 }}
                 className="lg:col-span-2 bg-white rounded-xl p-6 shadow-md"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Demandes de Prière Récentes</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Demandes de Prière Récentes</h2>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/admin/prayers')}>
+                    Voir Plus
+                  </Button>
+                </div>
                 <div className="space-y-3">
-                  {recentPrayers.map((prayer) => (
-                    <div key={prayer.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{prayer.name}</p>
-                        <p className="text-sm text-gray-600">{prayer.subject}</p>
+                  {recentPrayers.length > 0 ? (
+                    recentPrayers.map((prayer) => (
+                      <div key={prayer.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                        <div className="flex-1">
+                          <p className="font-semibold text-gray-900">{prayer.name}</p>
+                          <p className="text-sm text-gray-600">{prayer.subject}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ml-4 ${prayer.urgent ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
+                          {prayer.category} {prayer.urgent && '🚨'}
+                        </span>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${prayer.urgent ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'}`}>
-                        {prayer.category} {prayer.urgent && '🚨'}
-                      </span>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Heart className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                      <p>Aucune demande de prière</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </motion.div>
 
@@ -121,67 +152,91 @@ export default function Dashboard() {
                 animate={{ opacity: 1, x: 0 }}
                 className="bg-white rounded-xl p-6 shadow-md"
               >
-                <h2 className="text-xl font-bold text-gray-900 mb-4">Événements à Venir</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Événements à Venir</h2>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/admin/events')}>
+                    Voir Plus
+                  </Button>
+                </div>
                 <div className="space-y-3">
-                  {upcomingEvents.map((event, idx) => (
-                    <div key={idx} className="p-4 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] text-white rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{event.icon}</span>
-                        <div className="flex-1">
-                          <p className="font-semibold">{event.title}</p>
-                          <p className="text-sm text-white/80">{event.date}</p>
+                  {upcomingEvents.length > 0 ? (
+                    upcomingEvents.map((event, idx) => (
+                      <div key={idx} className="p-4 bg-gradient-to-r from-[#1e3a5f] to-[#2d5a8f] text-white rounded-lg hover:shadow-lg transition-shadow cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{event.icon}</span>
+                          <div className="flex-1">
+                            <p className="font-semibold">{event.title}</p>
+                            <p className="text-sm text-white/80">{event.date}</p>
+                          </div>
+                          <ArrowRight className="w-4 h-4 opacity-50" />
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Gift className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                      <p>Aucun événement à venir</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </motion.div>
             </div>
 
             {/* Recent Donations */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="mt-6 bg-white rounded-xl p-6 shadow-md">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Dons Récents</h2>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Donateur</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Type</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Montant</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentDonations.map((donation, idx) => (
-                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4 text-gray-900">{donation.donor}</td>
-                        <td className="py-3 px-4">
-                          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                            {donation.type}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 font-semibold text-green-600">{donation.amount}</td>
-                        <td className="py-3 px-4 text-gray-600">{donation.date}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Dons Récents</h2>
+                <Button variant="outline" size="sm" onClick={() => navigate('/admin/finances')}>
+                  Voir Plus
+                </Button>
               </div>
+              {recentDonations.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Donateur</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Type</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Montant</th>
+                        <th className="text-left py-3 px-4 font-semibold text-gray-700">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentDonations.map((donation, idx) => (
+                        <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-3 px-4 text-gray-900">{donation.donor}</td>
+                          <td className="py-3 px-4">
+                            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                              {donation.type}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 font-semibold text-green-600">{donation.amount}</td>
+                          <td className="py-3 px-4 text-gray-600">{donation.date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <Gift className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                  <p>Aucun don enregistré</p>
+                </div>
+              )}
             </motion.div>
 
             {/* Quick Actions */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Actions Rapides</h2>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {[
-                  { label: 'Ajouter Membre', icon: '👤' },
-                  { label: 'Créer Événement', icon: '📅' },
-                  { label: 'Publier Annonce', icon: '📢' },
-                  { label: 'Enregistrer Don', icon: '💰' },
-                ].map((action) => (
-                  <button key={action.label} className="flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg p-4 font-semibold text-gray-900 transition-colors">
+                {quickActions.map((action) => (
+                  <button 
+                    key={action.label} 
+                    onClick={() => navigate(action.route)}
+                    className="flex flex-col items-center justify-center gap-2 bg-white hover:bg-[#1e3a5f] hover:text-white border border-gray-200 hover:border-[#1e3a5f] rounded-lg p-4 font-semibold text-gray-900 transition-all duration-300 transform hover:scale-105"
+                  >
                     <span className="text-2xl">{action.icon}</span>
-                    <span className="hidden sm:inline text-sm">{action.label}</span>
+                    <span className="text-xs sm:text-sm text-center">{action.label}</span>
                   </button>
                 ))}
               </div>

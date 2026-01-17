@@ -8,6 +8,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useAppContext } from '@/lib/AppContext';
 import {
   Select,
   SelectContent,
@@ -37,9 +38,27 @@ export default function Priere() {
     private: false,
   });
   const [submitted, setSubmitted] = useState(false);
+  const { addPrayer } = useAppContext();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Add prayer to context
+    addPrayer({
+      id: Date.now().toString(),
+      requester_name: formData.name,
+      requester_email: formData.email,
+      requester_phone: formData.phone,
+      subject: formData.subject,
+      details: formData.details,
+      prayer_category: formData.category as any,
+      is_urgent: formData.urgent,
+      is_private: formData.private,
+      status: 'nouvelle',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
     setFormData({

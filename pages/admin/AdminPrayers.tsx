@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Trash2, Edit2, Sparkles, Heart, CheckCircle } from 'lucide-react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminHeader from '@/components/admin/AdminHeader';
 import StatsCard from '@/components/admin/StatsCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useAppContext } from '@/lib/AppContext';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog,
@@ -24,39 +25,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const prayers = [
-  {
-    id: 1,
-    name: 'Jean Baptiste',
-    category: 'Santé',
-    subject: 'Santé familiale',
-    content: 'Ma mère est malade et a besoin de guérison...',
-    urgent: true,
-    status: 'new',
-    date: '2024-01-20',
-    phone: '+243812345678',
-  },
-  {
-    id: 2,
-    name: 'Marie Kalonda',
-    category: 'Travail',
-    subject: 'Emploi',
-    content: 'Je cherche un emploi depuis longtemps...',
-    urgent: false,
-    status: 'praying',
-    date: '2024-01-19',
-    phone: '+243987654321',
-  },
-];
-
 export default function AdminPrayers() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [prayersList, setPrayersList] = useState(prayers);
+  const { prayers, addPrayer, updatePrayer, deletePrayer } = useAppContext();
 
   const stats = [
-    { icon: 'new', title: 'Nouvelles', value: '8', color: 'blue' },
-    { icon: 'pray', title: 'En Prière', value: '12', color: 'yellow' },
-    { icon: 'check', title: 'Exaucées', value: '24', color: 'green' },
+    { icon: Sparkles, title: 'Nouvelles', value: '8', color: 'blue' },
+    { icon: Heart, title: 'En Prière', value: '12', color: 'pink' },
+    { icon: CheckCircle, title: 'Exaucées', value: '24', color: 'green' },
   ];
 
   return (
@@ -97,7 +73,7 @@ export default function AdminPrayers() {
                 </Select>
               </div>
 
-              {prayersList.map((prayer) => (
+              {prayers.map((prayer) => (
                 <motion.div
                   key={prayer.id}
                   initial={{ opacity: 0, y: 20 }}

@@ -2,10 +2,11 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Share2 } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { useAppContext } from '@/lib/AppContext';
+import InteractionButtons from '@/components/InteractionButtons';
 import {
   Dialog,
   DialogContent,
@@ -63,22 +64,39 @@ const testimonies = [
 ];
 
 export default function Temoignages() {
-  const [formData, setFormData] = useState({ name: '', title: '', type: '', content: '' });
+  const { testimonies, addTestimony } = useAppContext();
+  const [formData, setFormData] = useState({ name: '', title: '', type: 'Guérison', content: '' });
   const [submitted, setSubmitted] = useState(false);
   const [selectedType, setSelectedType] = useState('tous');
+  const [shareMessage, setShareMessage] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: '', title: '', type: '', content: '' });
-    }, 2000);
+    if (formData.name && formData.title && formData.type && formData.content) {
+      addTestimony({
+        id: Date.now().toString(),
+        name: formData.name,
+        title: formData.title,
+        type: formData.type as any,
+        content: formData.content,
+        status: 'pending',
+        date: new Date().toISOString().split('T')[0],
+      });
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: '', title: '', type: 'Guérison', content: '' });
+      }, 2000);
+    }
   };
 
   const filtered = selectedType === 'tous'
-    ? testimonies
-    : testimonies.filter((t) => t.type === selectedType);
+    ? testimonies && testimonies.length > 0 
+      ? testimonies.filter((t: any) => t.status === 'approved')
+      : []
+    : testimonies && testimonies.length > 0 
+      ? testimonies.filter((t: any) => t.type === selectedType && t.status === 'approved')
+      : [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -98,6 +116,17 @@ export default function Temoignages() {
             <p className="text-xl text-white/80 max-w-3xl mx-auto mb-8">
               Écoutez comment Dieu transforme des vies
             </p>
+
+            {shareMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="mb-6 inline-block bg-green-500 text-white px-4 py-2 rounded-lg text-sm"
+              >
+                ✓ Témoignage copié au presse-papiers!
+              </motion.div>
+            )}
             <Dialog>
               <DialogTrigger asChild>
                 <Button className="bg-[#d4af37] hover:bg-[#e8c547] text-[#1e3a5f] font-bold">
@@ -252,24 +281,13 @@ export default function Temoignages() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    size="sm"
-                  >
-                    <Heart className="w-4 h-4 mr-1" />
-                    Aimer
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    size="sm"
-                  >
-                    <Share2 className="w-4 h-4 mr-1" />
-                    Partager
-                  </Button>
-                </div>
+                <InteractionButtons
+                  contentId={testimony.id}
+                  contentType="testimony"
+                  title={testimony.title}
+                  content={testimony.content}
+                  size="sm"
+                />
               </motion.div>
             ))}
           </div>

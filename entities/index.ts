@@ -10,6 +10,9 @@ export type { Expense, ExpenseCategory, ExpenseStatus, ExpenseSummary } from './
 export type { Attendance, AttendanceStats, AttendanceDetail } from './Attendance';
 export type { Announcement, AnnouncementPriority, TargetAudience, AnnouncementWithStatus } from './Announcement';
 export type { LiveStream, LiveStreamWithStatus } from './LiveStream';
+export type { ContactMessage } from './ContactMessage';
+export type { ContactInfo } from './ContactInfo';
+export type { EventSubscription } from '../lib/entities/EventSubscription';
 
 // Import statements for direct access
 import type { Member } from './Member';
@@ -23,6 +26,9 @@ import type { Expense } from './Expense';
 import type { Attendance } from './Attendance';
 import type { Announcement } from './Announcement';
 import type { LiveStream } from './LiveStream';
+import type { ContactInfo } from './ContactInfo';
+import type { ContactMessage } from './ContactMessage';
+import type { EventSubscription } from '../lib/entities/EventSubscription';
 
 // Entity types map
-export type Entity = Member | Department | Event | Donation | Preaching | Testimony | PrayerRequest | Expense | Attendance | Announcement | LiveStream;
+export type Entity = Member | Department | Event | Donation | Preaching | Testimony | PrayerRequest | Expense | Attendance | Announcement | LiveStream | ContactInfo | ContactMessage | EventSubscription;

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { mockMembers, mockEvents, mockAnnouncements, mockDepartments, mockLiveStreams, mockPreachings } from '@/lib/mockData'
-import type { Member, Event, Announcement, Department, LiveStream, Preaching } from '@/lib/entities'
+import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony } from '@/lib/entities'
 
 interface AppContextType {
   // Members
@@ -44,6 +44,38 @@ interface AppContextType {
   updatePreaching: (id: string, preaching: Partial<Preaching>) => void
   addPreaching: (preaching: Preaching) => void
   deletePreaching: (id: string) => void
+  
+  // Prayer Requests
+  prayers: PrayerRequest[]
+  setPrayers: (prayers: PrayerRequest[]) => void
+  updatePrayer: (id: string, prayer: Partial<PrayerRequest>) => void
+  addPrayer: (prayer: PrayerRequest) => void
+  deletePrayer: (id: string) => void
+  
+  // Contact Info
+  contactInfo: ContactInfo | null
+  setContactInfo: (contactInfo: ContactInfo) => void
+  
+  // Contact Messages
+  contactMessages: ContactMessage[]
+  setContactMessages: (messages: ContactMessage[]) => void
+  addContactMessage: (message: ContactMessage) => void
+  deleteContactMessage: (id: string) => void
+  updateContactMessage: (id: string, message: Partial<ContactMessage>) => void
+
+  // Event Subscriptions
+  eventSubscriptions: EventSubscription[]
+  setEventSubscriptions: (subscriptions: EventSubscription[]) => void
+  addEventSubscription: (subscription: EventSubscription) => void
+  deleteEventSubscription: (id: string) => void
+  updateEventSubscription: (id: string, subscription: Partial<EventSubscription>) => void
+
+  // Testimonies
+  testimonies: Testimony[]
+  setTestimonies: (testimonies: Testimony[]) => void
+  addTestimony: (testimony: Testimony) => void
+  deleteTestimony: (id: string) => void
+  updateTestimony: (id: string, testimony: Partial<Testimony>) => void
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -55,6 +87,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [departments, setDepartmentsState] = useState<Department[]>([])
   const [liveStreams, setLiveStreamsState] = useState<LiveStream[]>([])
   const [preachings, setPreachingsState] = useState<Preaching[]>([])
+  const [prayers, setPrayersState] = useState<PrayerRequest[]>([])
+  const [contactInfo, setContactInfoState] = useState<ContactInfo | null>(null)
+  const [contactMessages, setContactMessagesState] = useState<ContactMessage[]>([])
+  const [eventSubscriptions, setEventSubscriptionsState] = useState<EventSubscription[]>([])
+  const [testimonies, setTestimoniesState] = useState<Testimony[]>([])
   const [isHydrated, setIsHydrated] = useState(false)
 
   // Initialiser depuis localStorage au montage
@@ -66,6 +103,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedDepartments = localStorage.getItem('eglizia_departments')
       const storedLiveStreams = localStorage.getItem('eglizia_livestreams')
       const storedPreachings = localStorage.getItem('eglizia_preachings')
+      const storedPrayers = localStorage.getItem('eglizia_prayers')
+      const storedContactInfo = localStorage.getItem('eglizia_contact')
+      const storedContactMessages = localStorage.getItem('eglizia_contact_messages')
+      const storedEventSubscriptions = localStorage.getItem('eglizia_event_subscriptions')
+      const storedTestimonies = localStorage.getItem('eglizia_testimonies')
 
       setMembersState(storedMembers ? JSON.parse(storedMembers) : mockMembers)
       setEventsState(storedEvents ? JSON.parse(storedEvents) : mockEvents)
@@ -73,6 +115,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDepartmentsState(storedDepartments ? JSON.parse(storedDepartments) : mockDepartments)
       setLiveStreamsState(storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams)
       setPreachingsState(storedPreachings ? JSON.parse(storedPreachings) : mockPreachings)
+      setPrayersState(storedPrayers ? JSON.parse(storedPrayers) : [])
+      setContactInfoState(storedContactInfo ? JSON.parse(storedContactInfo) : null)
+      setContactMessagesState(storedContactMessages ? JSON.parse(storedContactMessages) : [])
+      setEventSubscriptionsState(storedEventSubscriptions ? JSON.parse(storedEventSubscriptions) : [])
+      setTestimoniesState(storedTestimonies ? JSON.parse(storedTestimonies) : [])
 
       if (!storedMembers) localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
       if (!storedEvents) localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
@@ -80,6 +127,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!storedDepartments) localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
       if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
       if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
+      if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
+      if (!storedContactInfo) localStorage.setItem('eglizia_contact', JSON.stringify(null))
+      if (!storedContactMessages) localStorage.setItem('eglizia_contact_messages', JSON.stringify([]))
+      if (!storedEventSubscriptions) localStorage.setItem('eglizia_event_subscriptions', JSON.stringify([]))
+      if (!storedTestimonies) localStorage.setItem('eglizia_testimonies', JSON.stringify([]))
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error)
       setMembersState(mockMembers)
@@ -88,6 +140,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDepartmentsState(mockDepartments)
       setLiveStreamsState(mockLiveStreams)
       setPreachingsState(mockPreachings)
+      setPrayersState([])
+      setContactInfoState(null)
     }
     setIsHydrated(true)
   }, [])
@@ -230,6 +284,108 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPreachings(preachings.filter(p => p.id !== id))
   }
 
+  // Prayer handlers
+  const setPrayers = (newPrayers: PrayerRequest[]) => {
+    setPrayersState(newPrayers)
+    try {
+      localStorage.setItem('eglizia_prayers', JSON.stringify(newPrayers))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  const updatePrayer = (id: string, updates: Partial<PrayerRequest>) => {
+    const newPrayers = prayers.map(p => (p.id === id ? { ...p, ...updates } : p))
+    setPrayers(newPrayers)
+  }
+
+  const addPrayer = (prayer: PrayerRequest) => {
+    setPrayers([...prayers, prayer])
+  }
+
+  const deletePrayer = (id: string) => {
+    setPrayers(prayers.filter(p => p.id !== id))
+  }
+
+  // Contact handlers
+  const setContactInfo = (info: ContactInfo) => {
+    setContactInfoState(info)
+    try {
+      localStorage.setItem('eglizia_contact', JSON.stringify(info))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  // Contact Messages handlers
+  const setContactMessages = (messages: ContactMessage[]) => {
+    setContactMessagesState(messages)
+    try {
+      localStorage.setItem('eglizia_contact_messages', JSON.stringify(messages))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  const addContactMessage = (message: ContactMessage) => {
+    setContactMessages([...contactMessages, message])
+  }
+
+  const deleteContactMessage = (id: string) => {
+    setContactMessages(contactMessages.filter(m => m.id !== id))
+  }
+
+  const updateContactMessage = (id: string, updates: Partial<ContactMessage>) => {
+    const newMessages = contactMessages.map(m => (m.id === id ? { ...m, ...updates } : m))
+    setContactMessages(newMessages)
+  }
+
+  // Event Subscriptions handlers
+  const setEventSubscriptions = (subscriptions: EventSubscription[]) => {
+    setEventSubscriptionsState(subscriptions)
+    try {
+      localStorage.setItem('eglizia_event_subscriptions', JSON.stringify(subscriptions))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  const addEventSubscription = (subscription: EventSubscription) => {
+    setEventSubscriptions([...eventSubscriptions, subscription])
+  }
+
+  const deleteEventSubscription = (id: string) => {
+    setEventSubscriptions(eventSubscriptions.filter(s => s.id !== id))
+  }
+
+  const updateEventSubscription = (id: string, updates: Partial<EventSubscription>) => {
+    const newSubscriptions = eventSubscriptions.map(s => (s.id === id ? { ...s, ...updates } : s))
+    setEventSubscriptions(newSubscriptions)
+  }
+
+  // Testimonies handlers
+  const setTestimonies = (testimonies: Testimony[]) => {
+    setTestimoniesState(testimonies)
+    try {
+      localStorage.setItem('eglizia_testimonies', JSON.stringify(testimonies))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  const addTestimony = (testimony: Testimony) => {
+    setTestimonies([...testimonies, testimony])
+  }
+
+  const deleteTestimony = (id: string) => {
+    setTestimonies(testimonies.filter(t => t.id !== id))
+  }
+
+  const updateTestimony = (id: string, updates: Partial<Testimony>) => {
+    const newTestimonies = testimonies.map(t => (t.id === id ? { ...t, ...updates } : t))
+    setTestimonies(newTestimonies)
+  }
+
   const value: AppContextType = {
     members, setMembers, updateMember, addMember, deleteMember,
     events, setEvents, updateEvent, addEvent, deleteEvent,
@@ -237,6 +393,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     departments, setDepartments, updateDepartment, addDepartment, deleteDepartment,
     liveStreams, setLiveStreams, updateLiveStream, addLiveStream, deleteLiveStream,
     preachings, setPreachings, updatePreaching, addPreaching, deletePreaching,
+    prayers, setPrayers, updatePrayer, addPrayer, deletePrayer,
+    contactInfo, setContactInfo,
+    contactMessages, setContactMessages, addContactMessage, deleteContactMessage, updateContactMessage,
+    eventSubscriptions, setEventSubscriptions, addEventSubscription, deleteEventSubscription, updateEventSubscription,
+    testimonies, setTestimonies, addTestimony, deleteTestimony, updateTestimony,
   }
 
   return (

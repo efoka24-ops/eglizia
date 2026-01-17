@@ -15,7 +15,8 @@ import {
   Home,
   ChevronLeft,
   LogOut,
-  Radio
+  Radio,
+  Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
@@ -29,8 +30,12 @@ const menuItems = [
   { icon: MessageSquare, label: 'Témoignages', page: 'AdminTestimonies' },
   { icon: Heart, label: 'Demandes de prière', page: 'AdminPrayers' },
   { icon: Wallet, label: 'Finances', page: 'AdminFinances' },
+  { icon: Calendar, label: 'Programmes', page: 'AdminProgrammes' },
+  { icon: Users, label: 'Inscriptions', page: 'AdminSubscriptions' },
   { icon: Building2, label: 'Départements', page: 'AdminDepartments' },
   { icon: Bell, label: 'Annonces', page: 'AdminAnnouncements' },
+  { icon: Mail, label: 'Messages', page: 'AdminMessages' },
+  { icon: Settings, label: 'Paramètres', page: 'AdminContact' },
 ];
 
 export default function AdminSidebar({ isOpen, setIsOpen }) {

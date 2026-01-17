@@ -129,7 +129,7 @@ export default function AdminAnnouncements() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {announcements_.filter((a) => a.title.toLowerCase().includes(search.toLowerCase())).map((announcement) => (
+                {announcements.filter((a) => a.title.toLowerCase().includes(search.toLowerCase())).map((announcement) => (
                   <motion.div key={announcement.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex gap-3 flex-1">

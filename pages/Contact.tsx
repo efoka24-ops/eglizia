@@ -8,8 +8,9 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useAppContext } from '@/lib/AppContext';
 
-const contactInfo = [
+const defaultContactInfo = [
   {
     icon: MapPin,
     title: 'Adresse',
@@ -39,9 +40,51 @@ const contactInfo = [
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const { contactInfo, addContactMessage } = useAppContext();
+
+  const displayInfo = contactInfo ? [
+    {
+      icon: MapPin,
+      title: 'Adresse',
+      content: contactInfo.address,
+      color: 'from-blue-500 to-blue-600',
+    },
+    {
+      icon: Phone,
+      title: 'Téléphone',
+      content: contactInfo.phone,
+      color: 'from-green-500 to-green-600',
+    },
+    {
+      icon: Mail,
+      title: 'Email',
+      content: contactInfo.email,
+      color: 'from-red-500 to-red-600',
+    },
+    {
+      icon: Clock,
+      title: 'Horaires',
+      content: `Dimanche: ${contactInfo.sunday_start?.slice(0, 5)} - ${contactInfo.sunday_end?.slice(0, 5)}\nMercredi: ${contactInfo.wednesday_start?.slice(0, 5)} - ${contactInfo.wednesday_end?.slice(0, 5)}`,
+      color: 'from-purple-500 to-purple-600',
+    },
+  ] : defaultContactInfo;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Add message to context
+    addContactMessage({
+      id: Date.now().toString(),
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      subject: formData.subject,
+      message: formData.message,
+      is_read: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
+    
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 3000);
     setFormData({ name: '', phone: '', email: '', subject: '', message: '' });
@@ -73,7 +116,7 @@ export default function Contact() {
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {contactInfo.map((info, index) => (
+            {displayInfo.map((info, index) => (
               <motion.div
                 key={info.title}
                 initial={{ opacity: 0, y: 20 }}

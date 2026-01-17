@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { MapPin, Phone, Mail, Clock, Facebook, Youtube, Instagram } from 'lucide-react';
+import { useAppContext } from '@/lib/AppContext';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const { contactInfo } = useAppContext();
   
   return (
     <footer className="bg-[#0f1f33] text-white">
@@ -85,21 +87,30 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#d4af37] mt-1 flex-shrink-0" />
-                <span className="text-white/70">Douala, Cameroun</span>
+                <span className="text-white/70">{contactInfo?.address || 'Douala, Cameroun'}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#d4af37] flex-shrink-0" />
-                <span className="text-white/70">+237 6XX XXX XXX</span>
+                <span className="text-white/70">{contactInfo?.phone || '+237 6XX XXX XXX'}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#d4af37] flex-shrink-0" />
-                <span className="text-white/70">contact@chapelle-restauration.org</span>
+                <span className="text-white/70">{contactInfo?.email || 'contact@chapelle-restauration.org'}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-[#d4af37] mt-1 flex-shrink-0" />
                 <div className="text-white/70">
-                  <p>Dimanche: 9h00 - 12h00</p>
-                  <p>Mercredi: 18h00 - 20h00</p>
+                  {contactInfo ? (
+                    <>
+                      <p>Dimanche: {contactInfo.sunday_start?.slice(0, 5)} - {contactInfo.sunday_end?.slice(0, 5)}</p>
+                      <p>Mercredi: {contactInfo.wednesday_start?.slice(0, 5)} - {contactInfo.wednesday_end?.slice(0, 5)}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p>Dimanche: 9h00 - 12h00</p>
+                      <p>Mercredi: 18h00 - 20h00</p>
+                    </>
+                  )}
                 </div>
               </li>
             </ul>

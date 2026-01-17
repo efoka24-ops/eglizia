@@ -24,10 +24,14 @@ const PAGE_URLS: Record<string, string> = {
   'AdminEvents': '/admin/events',
   'AdminDepartments': '/admin/departments',
   'AdminFinances': '/admin/finances',
+  'AdminProgrammes': '/admin/programmes',
   'AdminPreachings': '/admin/preachings',
+  'AdminSubscriptions': '/admin/subscriptions',
   'AdminTestimonies': '/admin/testimonies',
   'AdminPrayers': '/admin/prayers',
   'AdminLive': '/admin/live',
+  'AdminMessages': '/admin/messages',
+  'AdminContact': '/admin/contact',
 }
 
 /**

@@ -12,27 +12,25 @@ import {
 export default function AdminHeader({ sidebarOpen, setSidebarOpen, user }) {
   return (
     <header className="bg-white border-b sticky top-0 z-30">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="lg:hidden"
-          >
-            <Menu className="w-5 h-5" />
-          </Button>
-          
-          <div className="hidden sm:block relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input 
-              placeholder="Rechercher..."
-              className="pl-10 w-64 bg-gray-50"
-            />
-          </div>
+      <div className="flex items-center justify-center px-4 py-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="lg:hidden absolute left-4"
+        >
+          <Menu className="w-5 h-5" />
+        </Button>
+        
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input 
+            placeholder="Rechercher..."
+            className="pl-10 w-64 bg-gray-50"
+          />
         </div>
         
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 absolute right-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
