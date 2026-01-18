@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Copy, Check, AlertCircle } from 'lucide-react';
+import { Heart, Copy, Check, AlertCircle, Loader } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { campay } from '@/api/campayClient';
+import { useAppContext } from '@/lib/AppContext';
 
 const whyDonate = [
   'Soutenir le ministère et la croissance spirituelle',
@@ -48,8 +50,12 @@ const paymentMethods = [
 ];
 
 export default function Dons() {
+  const { addDonation } = useAppContext();
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', amount: '', type: '', project: '', method: '', anonymous: false });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [paymentLink, setPaymentLink] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopy = (text: string, id: string) => {
@@ -58,11 +64,100 @@ export default function Dons() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    setFormData({ name: '', phone: '', email: '', amount: '', type: '', project: '', method: '', anonymous: false });
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Validate form
+      if (!formData.name || !formData.email || !formData.amount || !formData.method) {
+        throw new Error('Veuillez remplir tous les champs requis');
+      }
+
+      if (formData.method !== 'bank') {
+        // For MTN MoMo or Orange Money, validate phone
+        if (!formData.phone || !campay.isValidPhoneNumber(formData.phone)) {
+          throw new Error('Numéro de téléphone invalide');
+        }
+      }
+
+      const amountStr = formData.amount.toString();
+      const externalRef = `don_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const description = `Don ${formData.type} - ${formData.name} - ${formData.project || 'Général'}`;
+
+      // Create donation record
+      const donation = {
+        id: externalRef,
+        donor_name: formData.anonymous ? 'Anonyme' : formData.name,
+        email: formData.anonymous ? 'anonyme@eglizia.local' : formData.email,
+        phone: formData.anonymous ? '' : formData.phone,
+        amount: parseFloat(amountStr),
+        donation_type: formData.type,
+        project: formData.project,
+        payment_method: formData.method,
+        status: 'pending',
+        reference: externalRef,
+        date: new Date().toISOString(),
+      };
+
+      // Try to create payment link with Campay
+      try {
+        const { payment_link, reference } = await campay.createPaymentLink(
+          amountStr,
+          description,
+          externalRef,
+          window.location.href,
+          'XAF'
+        );
+
+        // Update donation with campay reference
+        donation.reference = reference;
+        donation.status = 'campay_initiated';
+
+        // Save to localStorage
+        const donations = JSON.parse(localStorage.getItem('eglizia_donations') || '[]');
+        donations.push(donation);
+        localStorage.setItem('eglizia_donations', JSON.stringify(donations));
+
+        // Redirect to payment link
+        setPaymentLink(payment_link);
+        setSubmitted(true);
+
+        setTimeout(() => {
+          window.location.href = payment_link;
+        }, 2000);
+      } catch (campayErr: any) {
+        console.warn('Campay unavailable, using manual payment fallback:', campayErr);
+
+        // Save donation with status as pending manual payment
+        donation.status = 'pending_manual';
+        donation.notes = 'Payment via Campay unavailable. Manual payment instructions sent to email.';
+
+        const donations = JSON.parse(localStorage.getItem('eglizia_donations') || '[]');
+        donations.push(donation);
+        localStorage.setItem('eglizia_donations', JSON.stringify(donations));
+
+        // Show success message with manual payment instructions
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          setError(
+            'Le service de paiement Campay est temporairement indisponible. Votre don a été enregistré. ' +
+            'Un email avec les instructions de paiement manuel vous sera envoyé. Merci pour votre soutien!'
+          );
+        }, 3000);
+      }
+
+      // Reset form
+      setFormData({ name: '', phone: '', email: '', amount: '', type: '', project: '', method: '', anonymous: false });
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      setError(err.message || 'Une erreur est survenue lors du traitement du paiement. Veuillez vérifier vos informations et réessayer.');
+      setSubmitted(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -110,8 +205,30 @@ export default function Dons() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="text-2xl font-bold text-green-600">Merci!</p>
-                  <p className="text-gray-600 mt-2">Votre don a été enregistré avec succès.</p>
+                  <p className="text-2xl font-bold text-green-600">Redirection en cours...</p>
+                  <p className="text-gray-600 mt-2">Vous allez être redirigé vers la plateforme de paiement Campay</p>
+                  {paymentLink && (
+                    <p className="text-sm text-gray-500 mt-4">
+                      <a href={paymentLink} className="text-blue-600 hover:underline">
+                        Cliquez ici si vous n'êtes pas redirigé automatiquement
+                      </a>
+                    </p>
+                  )}
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center justify-center py-16 bg-red-50 rounded-2xl">
+                  <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                    <AlertCircle className="w-12 h-12 text-red-600" />
+                  </div>
+                  <p className="text-2xl font-bold text-red-600">Erreur</p>
+                  <p className="text-gray-600 mt-2 text-center">{error}</p>
+                  <Button
+                    onClick={() => setError(null)}
+                    className="mt-4 bg-red-600 hover:bg-red-700"
+                    size="sm"
+                  >
+                    Réessayer
+                  </Button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -211,9 +328,22 @@ export default function Dons() {
                     </label>
                   </div>
 
-                  <Button className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8f] text-white" size="lg">
-                    <Heart className="w-4 h-4 mr-2" />
-                    Confirmer le don
+                  <Button 
+                    disabled={loading}
+                    className="w-full bg-[#1e3a5f] hover:bg-[#2d5a8f] text-white disabled:opacity-50" 
+                    size="lg"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader className="w-4 h-4 mr-2 animate-spin" />
+                        Traitement en cours...
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="w-4 h-4 mr-2" />
+                        Confirmer le don
+                      </>
+                    )}
                   </Button>
                 </form>
               )}
@@ -231,7 +361,7 @@ export default function Dons() {
                   {whyDonate.map((reason) => (
                     <li key={reason} className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-[#d4af37] flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <check className="w-4 h-4 text-[#1e3a5f]" />
+                        <Check className="w-4 h-4 text-[#1e3a5f]" />
                       </div>
                       <span className="text-white/90">{reason}</span>
                     </li>

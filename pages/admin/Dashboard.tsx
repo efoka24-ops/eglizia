@@ -18,7 +18,7 @@ export default function Dashboard() {
     events = [], 
     announcements = [], 
     preachings = [], 
-    prayerRequests = [],
+    prayers = [],
     finances = []
   } = useAppContext();
 
@@ -31,16 +31,16 @@ export default function Dashboard() {
   ];
 
   // Get recent prayer requests from context
-  const recentPrayers = (prayerRequests || [])
+  const recentPrayers = (prayers || [])
     .slice()
     .reverse()
     .slice(0, 4)
     .map((prayer: any) => ({
       id: prayer.id,
-      name: prayer.name,
-      subject: prayer.title,
-      category: prayer.category,
-      urgent: prayer.category === 'Urgence',
+      name: prayer.requester_name || prayer.name || 'Sans nom',
+      subject: prayer.subject || prayer.title || '',
+      category: prayer.prayer_category || prayer.category || 'autre',
+      urgent: prayer.is_urgent || prayer.category === 'Urgence',
     }));
 
   // Get upcoming events from context

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { mockMembers, mockEvents, mockAnnouncements, mockDepartments, mockLiveStreams, mockPreachings } from '@/lib/mockData'
+import { base44 } from '@/api/base44Client'
 import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony } from '@/entities'
 
 interface AppContextType {
@@ -76,6 +77,13 @@ interface AppContextType {
   addTestimony: (testimony: Testimony) => void
   deleteTestimony: (id: string) => void
   updateTestimony: (id: string, testimony: Partial<Testimony>) => void
+
+  // Donations
+  donations: any[]
+  setDonations: (donations: any[]) => void
+  addDonation: (donation: any) => void
+  deleteDonation: (id: string) => void
+  updateDonation: (id: string, donation: Partial<any>) => void
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
@@ -88,6 +96,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [liveStreams, setLiveStreamsState] = useState<LiveStream[]>([])
   const [preachings, setPreachingsState] = useState<Preaching[]>([])
   const [prayers, setPrayersState] = useState<PrayerRequest[]>([])
+  const [donations, setDonationsState] = useState<any[]>([])
   const [contactInfo, setContactInfoState] = useState<ContactInfo | null>(null)
   const [contactMessages, setContactMessagesState] = useState<ContactMessage[]>([])
   const [eventSubscriptions, setEventSubscriptionsState] = useState<EventSubscription[]>([])
@@ -104,6 +113,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedLiveStreams = localStorage.getItem('eglizia_livestreams')
       const storedPreachings = localStorage.getItem('eglizia_preachings')
       const storedPrayers = localStorage.getItem('eglizia_prayers')
+      const storedDonations = localStorage.getItem('eglizia_donations')
       const storedContactInfo = localStorage.getItem('eglizia_contact')
       const storedContactMessages = localStorage.getItem('eglizia_contact_messages')
       const storedEventSubscriptions = localStorage.getItem('eglizia_event_subscriptions')
@@ -116,6 +126,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setLiveStreamsState(storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams)
       setPreachingsState(storedPreachings ? JSON.parse(storedPreachings) : mockPreachings)
       setPrayersState(storedPrayers ? JSON.parse(storedPrayers) : [])
+      setDonationsState(storedDonations ? JSON.parse(storedDonations) : [])
       setContactInfoState(storedContactInfo ? JSON.parse(storedContactInfo) : null)
       setContactMessagesState(storedContactMessages ? JSON.parse(storedContactMessages) : [])
       setEventSubscriptionsState(storedEventSubscriptions ? JSON.parse(storedEventSubscriptions) : [])
@@ -128,6 +139,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
       if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
       if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
+      if (!storedDonations) localStorage.setItem('eglizia_donations', JSON.stringify([]))
       if (!storedContactInfo) localStorage.setItem('eglizia_contact', JSON.stringify(null))
       if (!storedContactMessages) localStorage.setItem('eglizia_contact_messages', JSON.stringify([]))
       if (!storedEventSubscriptions) localStorage.setItem('eglizia_event_subscriptions', JSON.stringify([]))
@@ -145,6 +157,44 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
     setIsHydrated(true)
   }, [])
+
+  // Fetch data from API with retry logic
+  useEffect(() => {
+    if (!isHydrated) return
+
+    const fetchAPIData = async () => {
+      // Small delay to ensure localStorage is ready
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      try {
+        // Fetch prayer requests from API
+        const prayersData = await base44.entities.PrayerRequest.list()
+        
+        const prayersList = Array.isArray(prayersData) ? prayersData : (prayersData.data || prayersData.prayer_requests || [])
+        if (Array.isArray(prayersList) && prayersList.length > 0) {
+          setPrayersState(prayersList)
+          localStorage.setItem('eglizia_prayers', JSON.stringify(prayersList))
+        }
+      } catch (error) {
+        console.warn('API unavailable for prayer requests, using cached data')
+      }
+
+      try {
+        // Fetch events from API
+        const eventsData = await base44.entities.Event.list()
+        
+        const eventsList = Array.isArray(eventsData) ? eventsData : (eventsData.data || eventsData.events || [])
+        if (Array.isArray(eventsList) && eventsList.length > 0) {
+          setEventsState(eventsList)
+          localStorage.setItem('eglizia_events', JSON.stringify(eventsList))
+        }
+      } catch (error) {
+        console.warn('API unavailable for events, using cached data')
+      }
+    }
+
+    fetchAPIData()
+  }, [isHydrated])
 
   // Members handlers
   const setMembers = (newMembers: Member[]) => {
@@ -386,6 +436,29 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setTestimonies(newTestimonies)
   }
 
+  // Donations handlers
+  const setDonations = (newDonations: any[]) => {
+    setDonationsState(newDonations)
+    try {
+      localStorage.setItem('eglizia_donations', JSON.stringify(newDonations))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  const addDonation = (donation: any) => {
+    setDonations([...donations, donation])
+  }
+
+  const deleteDonation = (id: string) => {
+    setDonations(donations.filter(d => d.id !== id))
+  }
+
+  const updateDonation = (id: string, updates: Partial<any>) => {
+    const newDonations = donations.map(d => (d.id === id ? { ...d, ...updates } : d))
+    setDonations(newDonations)
+  }
+
   const value: AppContextType = {
     members, setMembers, updateMember, addMember, deleteMember,
     events, setEvents, updateEvent, addEvent, deleteEvent,
@@ -394,6 +467,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     liveStreams, setLiveStreams, updateLiveStream, addLiveStream, deleteLiveStream,
     preachings, setPreachings, updatePreaching, addPreaching, deletePreaching,
     prayers, setPrayers, updatePrayer, addPrayer, deletePrayer,
+    donations, setDonations, addDonation, deleteDonation, updateDonation,
     contactInfo, setContactInfo,
     contactMessages, setContactMessages, addContactMessage, deleteContactMessage, updateContactMessage,
     eventSubscriptions, setEventSubscriptions, addEventSubscription, deleteEventSubscription, updateEventSubscription,
