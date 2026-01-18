@@ -28,83 +28,40 @@ interface TransactionResponse {
 }
 
 class CampayClient {
-  private username: string
-  private password: string
+  private permanentToken: string
   private apiUrl: string
-  private accessToken: string | null = null
-  private tokenExpiry: number | null = null
 
   constructor(
-    username: string = import.meta.env.VITE_CAMPAY_USERNAME || '',
-    password: string = import.meta.env.VITE_CAMPAY_PASSWORD || '',
+    permanentToken: string = import.meta.env.VITE_CAMPAY_TOKEN || '',
     apiUrl: string = import.meta.env.VITE_CAMPAY_API_URL || 'https://demo.campay.net/api'
   ) {
-    this.username = username
-    this.password = password
+    this.permanentToken = permanentToken
     this.apiUrl = apiUrl.replace(/\/$/, '') // Remove trailing slash
   }
 
   /**
-   * Get access token from Campay
-   */
-  private async getToken(): Promise<string> {
-    // Return cached token if still valid
-    if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
-      return this.accessToken
-    }
-
-    try {
-      const response = await fetch(`${this.apiUrl}/token/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: this.username,
-          password: this.password,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        console.error('Campay token error response:', response.status, errorData)
-        throw new Error(`Failed to get token: ${response.status}`)
-      }
-
-      const data = await response.json()
-      this.accessToken = data.token
-
-      // Token expires in ~3600 seconds, cache for 3500 seconds
-      this.tokenExpiry = Date.now() + 3500000
-
-      return data.token
-    } catch (error) {
-      console.error('Error getting Campay token:', error)
-      throw error
-    }
-  }
-
-  /**
-   * Make authenticated request to Campay API
+   * Make authenticated request to Campay API using permanent token
    */
   private async request<T>(
     endpoint: string,
     method: string = 'GET',
     body?: any
   ): Promise<T> {
-    const token = await this.getToken()
-
     const response = await fetch(`${this.apiUrl}${endpoint}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Token ${token}`,
+        Authorization: `Token ${this.permanentToken}`,
       },
       body: body ? JSON.stringify(body) : undefined,
     })
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
+      console.error(`Campay ${endpoint} error:`, {
+        status: response.status,
+        error: errorData,
+      })
       throw new Error(
         `Campay API error: ${response.status} - ${JSON.stringify(errorData)}`
       )
@@ -138,7 +95,7 @@ class CampayClient {
     )
 
     return {
-      payment_link: response.payment_link || response.url,
+      payment_link: response.link || response.payment_link || response.url,
       reference: response.reference || externalReference,
     }
   }

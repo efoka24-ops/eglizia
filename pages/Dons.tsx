@@ -120,6 +120,9 @@ export default function Dons() {
         donations.push(donation);
         localStorage.setItem('eglizia_donations', JSON.stringify(donations));
 
+        // Add donation to context
+        addDonation(donation);
+
         // Redirect to payment link
         setPaymentLink(payment_link);
         setSubmitted(true);
@@ -138,19 +141,21 @@ export default function Dons() {
         donations.push(donation);
         localStorage.setItem('eglizia_donations', JSON.stringify(donations));
 
+        // Add donation to context
+        addDonation(donation);
+
         // Show success message with manual payment instructions
-        setSubmitted(true);
-        setTimeout(() => {
-          setSubmitted(false);
-          setError(
-            'Le service de paiement Campay est temporairement indisponible. Votre don a été enregistré. ' +
-            'Un email avec les instructions de paiement manuel vous sera envoyé. Merci pour votre soutien!'
-          );
-        }, 3000);
+        setError(
+          'Le service de paiement Campay est temporairement indisponible. Votre don a été enregistré. ' +
+          'Un email avec les instructions de paiement manuel vous sera envoyé. Merci pour votre soutien!'
+        );
+        
+        // Reset form and submitted state
+        setFormData({ name: '', phone: '', email: '', amount: '', type: '', project: '', method: '', anonymous: false });
+        setSubmitted(false);
       }
 
-      // Reset form
-      setFormData({ name: '', phone: '', email: '', amount: '', type: '', project: '', method: '', anonymous: false });
+      // Reset form (only in success cases, errors handled above)
     } catch (err: any) {
       console.error('Payment error:', err);
       setError(err.message || 'Une erreur est survenue lors du traitement du paiement. Veuillez vérifier vos informations et réessayer.');
