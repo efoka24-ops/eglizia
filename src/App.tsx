@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { AppProvider } from '@/lib/AppContext'
 import { queryClient } from '@/lib/queryClient'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 // Public pages
 import Home from '@/pages/Home'
@@ -18,6 +19,7 @@ import Programmes from '@/pages/Programmes'
 import Temoignages from '@/pages/Temoignages'
 
 // Admin pages
+import AdminLogin from '@/pages/admin/Login'
 import Dashboard from '@/pages/admin/Dashboard'
 import AdminMembers from '@/pages/admin/AdminMembers'
 import AdminEvents from '@/pages/admin/AdminEvents'
@@ -52,22 +54,25 @@ function App() {
             <Route path="/programmes" element={<Programmes />} />
             <Route path="/temoignages" element={<Temoignages />} />
 
-            {/* Admin Routes */}
+            {/* Admin Authentication */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+
+            {/* Protected Admin Routes */}
             <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/members" element={<AdminMembers />} />
-            <Route path="/admin/events" element={<AdminEvents />} />
-            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
-            <Route path="/admin/departments" element={<AdminDepartments />} />
-            <Route path="/admin/finances" element={<AdminFinances />} />
-            <Route path="/admin/programmes" element={<AdminProgrammes />} />
-            <Route path="/admin/preachings" element={<AdminPreachings />} />
-            <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
-            <Route path="/admin/testimonies" element={<AdminTestimonies />} />
-            <Route path="/admin/prayers" element={<AdminPrayers />} />
-            <Route path="/admin/live" element={<AdminLive />} />
-            <Route path="/admin/messages" element={<AdminMessages />} />
-            <Route path="/admin/contact" element={<AdminContact />} />
+            <Route path="/admin/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/admin/members" element={<ProtectedRoute><AdminMembers /></ProtectedRoute>} />
+            <Route path="/admin/events" element={<ProtectedRoute><AdminEvents /></ProtectedRoute>} />
+            <Route path="/admin/announcements" element={<ProtectedRoute><AdminAnnouncements /></ProtectedRoute>} />
+            <Route path="/admin/departments" element={<ProtectedRoute><AdminDepartments /></ProtectedRoute>} />
+            <Route path="/admin/finances" element={<ProtectedRoute><AdminFinances /></ProtectedRoute>} />
+            <Route path="/admin/programmes" element={<ProtectedRoute><AdminProgrammes /></ProtectedRoute>} />
+            <Route path="/admin/preachings" element={<ProtectedRoute><AdminPreachings /></ProtectedRoute>} />
+            <Route path="/admin/subscriptions" element={<ProtectedRoute><AdminSubscriptions /></ProtectedRoute>} />
+            <Route path="/admin/testimonies" element={<ProtectedRoute><AdminTestimonies /></ProtectedRoute>} />
+            <Route path="/admin/prayers" element={<ProtectedRoute><AdminPrayers /></ProtectedRoute>} />
+            <Route path="/admin/live" element={<ProtectedRoute><AdminLive /></ProtectedRoute>} />
+            <Route path="/admin/messages" element={<ProtectedRoute><AdminMessages /></ProtectedRoute>} />
+            <Route path="/admin/contact" element={<ProtectedRoute><AdminContact /></ProtectedRoute>} />
           </Routes>
         </BrowserRouter>
       </AppProvider>

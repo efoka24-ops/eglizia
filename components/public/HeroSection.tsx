@@ -28,15 +28,6 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Logo */}
-          <div className="mb-8 flex justify-center">
-            <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/696373949841ab147d2effc0/8318d6067_images-removebg-preview.png" 
-              alt="La Chapelle de Restauration en Christ"
-              className="h-32 w-auto drop-shadow-2xl"
-            />
-          </div>
-          
           {/* Church Name */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
             La Chapelle de

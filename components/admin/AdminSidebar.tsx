@@ -44,6 +44,8 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
 
   const handleLogout = async () => {
     await base44.auth.logout();
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminEmail');
   };
 
   return (
