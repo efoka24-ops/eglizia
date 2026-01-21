@@ -153,7 +153,7 @@ export default function AdminContact() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="contact@chapelle-restauration.org"
+                        placeholder="chapellerestauration57@gmail.com"
                       />
                     </div>
                   </div>

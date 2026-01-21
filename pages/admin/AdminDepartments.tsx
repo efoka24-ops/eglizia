@@ -16,6 +16,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { Department } from '@/entities';
 
 export default function AdminDepartments() {
@@ -25,16 +32,16 @@ export default function AdminDepartments() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    leader_id: '',
+    leader_name: '',
   });
-  const { departments, addDepartment, updateDepartment, deleteDepartment } = useAppContext();
+  const { departments, addDepartment, updateDepartment, deleteDepartment, members } = useAppContext();
 
   const handleAddDepartment = () => {
     if (editingId) {
       updateDepartment(editingId, {
         name: formData.name,
         description: formData.description,
-        leader_id: formData.leader_id,
+        leader_name: formData.leader_name,
       });
       setEditingId(null);
     } else {
@@ -42,15 +49,14 @@ export default function AdminDepartments() {
         id: String(Date.now()),
         name: formData.name,
         description: formData.description,
-        leader_id: formData.leader_id,
-        member_count: 0,
+        leader_name: formData.leader_name,
         is_active: true,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
       addDepartment(newDepartment);
     }
-    setFormData({ name: '', description: '', leader_id: '' });
+    setFormData({ name: '', description: '', leader_name: '' });
     setIsDialogOpen(false);
   };
 
@@ -59,7 +65,7 @@ export default function AdminDepartments() {
       name: dept.name || '',
       description: dept.description || '',
       leader_id: dept.leader_id || '',
-    });
+    });name: dept.leader_name
     setEditingId(dept.id);
     setIsDialogOpen(true);
   };
@@ -88,7 +94,7 @@ export default function AdminDepartments() {
                     <Button 
                       onClick={() => {
                         setEditingId(null);
-                        setFormData({ name: '', description: '', leader_id: '' });
+                        setFormData({ name: '', description: '', leader_name: '' });
                       }}
                       className="bg-[#1e3a5f] hover:bg-[#2d5a8f]"
                     >
@@ -111,11 +117,11 @@ export default function AdminDepartments() {
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Leader ID</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Leader</label>
                           <Input 
-                            placeholder="ID du leader"
-                            value={formData.leader_id}
-                            onChange={(e) => setFormData({ ...formData, leader_id: e.target.value })}
+                            placeholder="Nom du leader"
+                            value={formData.leader_name}
+                            onChange={(e) => setFormData({ ...formData, leader_name: e.target.value })}
                           />
                         </div>
                       </div>
@@ -169,9 +175,8 @@ export default function AdminDepartments() {
                     </div>
                   </div>
                   <div className="space-y-2 text-sm text-gray-600">
-                    <p><span className="font-semibold">Membres:</span> {dept.member_count || 0}</p>
-                    {dept.leader_id && (
-                      <p><span className="font-semibold">Leader:</span> {dept.leader_id}</p>
+                    {dept.leader_name && (
+                      <p><span className="font-semibold">Leader:</span> {dept.leader_name}</p>
                     )}
                   </div>
                   {dept.is_active && (

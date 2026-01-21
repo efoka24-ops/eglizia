@@ -52,21 +52,19 @@ export default function APropos() {
               <h2 className="text-4xl font-bold text-[#1e3a5f] mt-3 mb-6">
                 Une église née de la vision divine
               </h2>
+              <div className="mb-6 p-4 bg-[#d4af37]/10 rounded-lg border-l-4 border-[#d4af37]">
+                <p className="font-semibold text-[#1e3a5f] mb-1">Pasteur Principal</p>
+                <p className="text-lg font-bold text-[#1e3a5f]">Prophète Obi Louis</p>
+              </div>
               <div className="space-y-4 text-gray-600 leading-relaxed">
                 <p>
-                  La Chapelle de Restauration en Christ a été fondée avec une vision claire : 
-                  voir des vies restaurées et transformées par la puissance de Jésus-Christ.
+                  <span className="font-semibold text-[#1e3a5f]">La Chapelle de Restauration en Christ</span> est une église Pentecôtiste située à Garoua, Cameroun, au quartier Yelwa Descente Souari Dépôt.
                 </p>
                 <p>
-                  Née d'une profonde conviction que Dieu désire guérir les cœurs brisés 
-                  et libérer les captifs, notre église s'est donnée pour mission d'être 
-                  un lieu de refuge, de guérison et de formation pour tous ceux qui 
-                  recherchent une rencontre authentique avec Dieu.
+                  Elle a été fondée avec une vision claire : voir des vies restaurées et transformées par la puissance de Jésus-Christ. Née d'une profonde conviction que Dieu désire guérir les cœurs brisés et libérer les captifs, notre église s'est donnée pour mission d'être un lieu de refuge, de guérison et de formation pour tous ceux qui recherchent une rencontre authentique avec Dieu.
                 </p>
                 <p>
-                  Au fil des années, nous avons vu d'innombrables miracles, des vies 
-                  transformées et une communauté grandissante de disciples passionnés 
-                  pour Christ.
+                  Au fil des années, nous avons vu d'innombrables miracles, des vies transformées et une communauté grandissante de disciples passionnés pour Christ.
                 </p>
               </div>
             </motion.div>

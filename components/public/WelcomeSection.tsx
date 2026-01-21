@@ -36,7 +36,7 @@ export default function WelcomeSection() {
                 Bienvenue chez nous
               </span>
               <h2 className="text-4xl md:text-5xl font-bold text-[#1e3a5f] mt-3 leading-tight">
-                Mot du Pasteur Principal
+                Pasteur Principal<br />Prophète Obi Louis
               </h2>
             </div>
             
@@ -60,8 +60,8 @@ export default function WelcomeSection() {
             </p>
             
             <div className="pt-4">
-              <p className="text-[#1e3a5f] font-bold text-xl">Pasteur Principal</p>
-              <p className="text-gray-500">La Chapelle de Restauration en Christ</p>
+              <p className="text-[#1e3a5f] font-bold text-xl">Prophète Obi Louis</p>
+              <p className="text-gray-500">Pasteur Principal - La Chapelle de Restauration en Christ</p>
             </div>
           </div>
         </motion.div>

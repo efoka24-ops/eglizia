@@ -31,7 +31,7 @@ export default function HeroSection() {
           {/* Church Name */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
             La Chapelle de
-            <span className="block text-[#d4af37] mt-2">Restauration en Christ</span>
+            <span className="block text-red-500 mt-2">Restauration en Christ</span>
           </h1>
           
           {/* Verse */}
@@ -89,12 +89,13 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.6 }}
-          className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto"
+          className="mt-16 grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
         >
           {[
-            { day: 'Dimanche', time: '09h00', label: 'Culte Principal' },
-            { day: 'Mercredi', time: '18h00', label: 'Étude Biblique' },
-            { day: 'Vendredi', time: '18h00', label: 'Veillée de Prière' },
+            { day: 'Lundi', time: '18h00', label: 'Intercession' },
+            { day: 'Mercredi', time: '18h00', label: 'Enseignement Biblique' },
+            { day: 'Vendredi', time: '18h00', label: 'Combat Spirituel' },
+            { day: 'Dimanche', time: '08h00', label: 'Culte d\'Action de Grâce' },
           ].map((item, index) => (
             <div 
               key={index}

@@ -16,6 +16,7 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
   'Femmes': Heart,
   'Hommes': Shield,
   'Enfants': Baby,
+  'Evangelisation': HeartHandshake,
   'Entraide': HeartHandshake,
   'Études bibliques': BookOpen,
 };
@@ -29,12 +30,13 @@ const gradientMap: { [key: string]: string } = {
   'Femmes': 'from-rose-500 to-pink-600',
   'Hommes': 'from-slate-600 to-slate-800',
   'Enfants': 'from-yellow-400 to-orange-500',
+  'Evangelisation': 'from-green-500 to-emerald-600',
   'Entraide': 'from-green-500 to-emerald-600',
   'Études bibliques': 'from-indigo-500 to-purple-600',
 };
 
 export default function Departements() {
-  const { departments } = useAppContext();
+  const { departments, members } = useAppContext();
 
   return (
     <div className="min-h-screen bg-white">
@@ -85,12 +87,12 @@ export default function Departements() {
                         {/* Content Panel */}
                         <div className="md:col-span-3 space-y-4">
                           <h3 className="text-4xl font-bold text-[#1e3a5f]">{dept.name}</h3>
-                          {dept.leader_id && (
+                          {dept.leader_name && (
                             <div className="flex items-center gap-2 text-gray-600">
                               <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-[#1e3a5f]">👤</div>
                               <div>
                                 <p className="text-sm text-gray-500">Leader</p>
-                                <p className="font-semibold text-gray-800">{dept.leader_id}</p>
+                                <p className="font-semibold text-gray-800">{dept.leader_name}</p>
                               </div>
                             </div>
                           )}
@@ -104,12 +106,12 @@ export default function Departements() {
                         {/* Content Panel */}
                         <div className="md:col-span-3 space-y-4">
                           <h3 className="text-4xl font-bold text-[#1e3a5f]">{dept.name}</h3>
-                          {dept.leader_id && (
+                          {dept.leader_name && (
                             <div className="flex items-center gap-2 text-gray-600">
                               <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-[#1e3a5f]">👤</div>
                               <div>
                                 <p className="text-sm text-gray-500">Leader</p>
-                                <p className="font-semibold text-gray-800">{dept.leader_id}</p>
+                                <p className="font-semibold text-gray-800">{dept.leader_name}</p>
                               </div>
                             </div>
                           )}

@@ -8,6 +8,11 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
   const { contactInfo } = useAppContext();
   
+  // Valeurs par défaut si contactInfo n'existe pas
+  const address = contactInfo?.address || 'Garoua, Cameroun - Yelwa, Souari Dépôt';
+  const phone = contactInfo?.phone || '+237 6 99 79 04 62';
+  const email = contactInfo?.email || 'chapellerestauration57@gmail.com';
+  
   return (
     <footer className="bg-[#0f1f33] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,30 +92,23 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-[#d4af37] mt-1 flex-shrink-0" />
-                <span className="text-white/70">{contactInfo?.address || 'Douala, Cameroun'}</span>
+                <span className="text-white/70">{address}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#d4af37] flex-shrink-0" />
-                <span className="text-white/70">{contactInfo?.phone || '+237 6XX XXX XXX'}</span>
+                <span className="text-white/70">{phone}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-[#d4af37] flex-shrink-0" />
-                <span className="text-white/70">{contactInfo?.email || 'contact@chapelle-restauration.org'}</span>
+                <span className="text-white/70">{email}</span>
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="w-5 h-5 text-[#d4af37] mt-1 flex-shrink-0" />
                 <div className="text-white/70">
-                  {contactInfo ? (
-                    <>
-                      <p>Dimanche: {contactInfo.sunday_start?.slice(0, 5)} - {contactInfo.sunday_end?.slice(0, 5)}</p>
-                      <p>Mercredi: {contactInfo.wednesday_start?.slice(0, 5)} - {contactInfo.wednesday_end?.slice(0, 5)}</p>
-                    </>
-                  ) : (
-                    <>
-                      <p>Dimanche: 9h00 - 12h00</p>
-                      <p>Mercredi: 18h00 - 20h00</p>
-                    </>
-                  )}
+                {/*   <p>Lundi: 18h - Intercession</p>
+                  <p>Mercredi: 18h - Enseignement Biblique</p>
+                  <p>Vendredi: 18h - Combat Spirituel</p> */}
+                  <p>Dimanche: 8h - Culte d'Action de Grâce</p>
                 </div>
               </li>
             </ul>

@@ -14,25 +14,25 @@ const defaultContactInfo = [
   {
     icon: MapPin,
     title: 'Adresse',
-    content: '123 Rue de la Réformation\nKinshasa, DRC',
+    content: 'Garoua, Cameroun\nYelwa, Souari Dépôt',
     color: 'from-blue-500 to-blue-600',
   },
   {
     icon: Phone,
     title: 'Téléphone',
-    content: '+243 (0) 123-456-789\n+243 (0) 987-654-321',
+    content: '+237 6 99 79 04 62\n+237 6XX XXX XXX',
     color: 'from-green-500 to-green-600',
   },
   {
     icon: Mail,
     title: 'Email',
-    content: 'contact@chapelle-rc.cd\ninfo@chapelle-rc.cd',
+    content: 'chapellerestauration57@gmail.com\ncontact@chapelle-restauration.org',
     color: 'from-red-500 to-red-600',
   },
   {
     icon: Clock,
     title: 'Horaires',
-    content: 'Dimanche: 9h30 - 12h30\nMercredi: 19h - 21h',
+    content: 'Lundi: 18h - Intercession\nMercredi: 18h - Enseignement\nVendredi: 18h - Combat Spirituel\nDimanche: 8h - Culte d\'action de grâce',
     color: 'from-purple-500 to-purple-600',
   },
 ];

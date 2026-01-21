@@ -83,17 +83,16 @@ export default function CampayDonation() {
         throw new Error('Un email valide est requis');
       }
 
-      // Initiate Campay payment
-      const paymentResponse = await campay.initiatePayment({
-        amount: formData.amount,
-        currency: 'XAF',
-        phone: formData.phone,
-        description: `Don ${formData.donationType} pour Eglise Chapelle - ${formData.donorName}`,
-        externalReference: `donation_${Date.now()}`,
-      });
+      // Initiate Campay payment using collect method
+      const paymentResponse = await campay.collectPayment(
+        String(formData.amount),
+        campay.formatPhoneNumber(formData.phone),
+        `Don ${formData.donationType} pour Eglise Chapelle - ${formData.donorName}`,
+        `donation_${Date.now()}`
+      );
 
-      if (paymentResponse.code === '200' || paymentResponse.code === '0') {
-        setTransactionRef(paymentResponse.data?.reference || '');
+      if (paymentResponse) {
+        setTransactionRef(paymentResponse.reference || '');
         setStatus('success');
 
         // Store donation message in context
@@ -116,8 +115,6 @@ export default function CampayDonation() {
           donationType: 'unique',
           message: '',
         });
-      } else {
-        throw new Error(paymentResponse.message || 'Erreur lors de l\'initiation du paiement');
       }
     } catch (error) {
       console.error('Donation error:', error);

@@ -36,7 +36,7 @@ interface WeeklyScheduleItem {
 export default function AdminProgrammes() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [schedule, setSchedule] = useState<WeeklyScheduleItem[]>([
-    { id: '1', day: 'Dimanche', startTime: '09:30', endTime: '12:30', event: 'Service Principal', location: 'Salle Principale', description: 'Service de culte hebdomadaire' },
+    { id: '1', day: 'Dimanche', startTime: '08:30', endTime: '12:30', event: 'Service Principal', location: 'Salle Principale', description: 'Service de culte hebdomadaire' },
     { id: '2', day: 'Mercredi', startTime: '19:00', endTime: '20:30', event: 'Réunion de Prière', location: 'Salle de Prière', description: 'Intercession collective' },
     { id: '3', day: 'Vendredi', startTime: '20:00', endTime: '21:30', event: 'Adoration & Worship', location: 'Salle Principale', description: 'Adoration et louange' },
   ]);

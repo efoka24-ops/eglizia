@@ -19,9 +19,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
 const weeklySchedule = [
-  { day: 'Dimanche', time: '09:30 - 12:30', event: 'Service Principal', location: 'Salle Principale' },
-  { day: 'Mercredi', time: '19:00 - 20:30', event: 'Réunion de Prière', location: 'Salle de Prière' },
-  { day: 'Vendredi', time: '20:00 - 21:30', event: 'Adoration & Worship', location: 'Salle Principale' },
+  { day: 'Lundi', time: '18:00', event: 'Intercession', location: 'Salle de Prière' },
+  { day: 'Mercredi', time: '18:00', event: 'Enseignement Biblique', location: 'Salle Principale' },
+  { day: 'Vendredi', time: '18:00', event: 'Combat Spirituel et Délivrance', location: 'Salle Principale' },
+  { day: 'Dimanche', time: '08:00', event: 'Culte d\'Action de Grâce', location: 'Salle Principale' },
 ];
 
 const upcomingEvents = [

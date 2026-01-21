@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { mockMembers, mockEvents, mockAnnouncements, mockDepartments, mockLiveStreams, mockPreachings } from '@/lib/mockData'
+import { mockMembers, mockEvents, mockAnnouncements, mockDepartments, mockLiveStreams, mockPreachings, mockChatMessages } from '@/lib/mockData'
 import { base44 } from '@/api/base44Client'
-import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony } from '@/entities'
+import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony, ChatMessage } from '@/entities'
 
 interface AppContextType {
   // Members
@@ -38,6 +38,13 @@ interface AppContextType {
   updateLiveStream: (id: string, liveStream: Partial<LiveStream>) => void
   addLiveStream: (liveStream: LiveStream) => void
   deleteLiveStream: (id: string) => void
+  
+  // Chat Messages
+  chatMessages: ChatMessage[]
+  setChatMessages: (messages: ChatMessage[]) => void
+  addChatMessage: (message: ChatMessage) => void
+  deleteChatMessage: (id: string) => void
+  getChatMessagesByStreamId: (streamId: string) => ChatMessage[]
   
   // Preachings
   preachings: Preaching[]
@@ -95,6 +102,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [departments, setDepartmentsState] = useState<Department[]>([])
   const [liveStreams, setLiveStreamsState] = useState<LiveStream[]>([])
   const [preachings, setPreachingsState] = useState<Preaching[]>([])
+  const [chatMessages, setChatMessagesState] = useState<ChatMessage[]>([])
   const [prayers, setPrayersState] = useState<PrayerRequest[]>([])
   const [donations, setDonationsState] = useState<any[]>([])
   const [contactInfo, setContactInfoState] = useState<ContactInfo | null>(null)
@@ -106,12 +114,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Initialiser depuis localStorage au montage
   useEffect(() => {
     try {
+      // Version key pour forcer le rechargement des données mises à jour
+      const dataVersion = '2.0';
+      const storedVersion = localStorage.getItem('eglizia_version');
+      const shouldRefresh = storedVersion !== dataVersion;
+
       const storedMembers = localStorage.getItem('eglizia_members')
       const storedEvents = localStorage.getItem('eglizia_events')
       const storedAnnouncements = localStorage.getItem('eglizia_announcements')
       const storedDepartments = localStorage.getItem('eglizia_departments')
       const storedLiveStreams = localStorage.getItem('eglizia_livestreams')
       const storedPreachings = localStorage.getItem('eglizia_preachings')
+      const storedChatMessages = localStorage.getItem('eglizia_chat_messages')
       const storedPrayers = localStorage.getItem('eglizia_prayers')
       const storedDonations = localStorage.getItem('eglizia_donations')
       const storedContactInfo = localStorage.getItem('eglizia_contact')
@@ -119,12 +133,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedEventSubscriptions = localStorage.getItem('eglizia_event_subscriptions')
       const storedTestimonies = localStorage.getItem('eglizia_testimonies')
 
-      setMembersState(storedMembers ? JSON.parse(storedMembers) : mockMembers)
-      setEventsState(storedEvents ? JSON.parse(storedEvents) : mockEvents)
-      setAnnouncementsState(storedAnnouncements ? JSON.parse(storedAnnouncements) : mockAnnouncements)
-      setDepartmentsState(storedDepartments ? JSON.parse(storedDepartments) : mockDepartments)
-      setLiveStreamsState(storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams)
-      setPreachingsState(storedPreachings ? JSON.parse(storedPreachings) : mockPreachings)
+      // Toujours charger les données fraîches si version a changé
+      setMembersState(shouldRefresh ? mockMembers : (storedMembers ? JSON.parse(storedMembers) : mockMembers))
+      setEventsState(shouldRefresh ? mockEvents : (storedEvents ? JSON.parse(storedEvents) : mockEvents))
+      setAnnouncementsState(shouldRefresh ? mockAnnouncements : (storedAnnouncements ? JSON.parse(storedAnnouncements) : mockAnnouncements))
+      setDepartmentsState(mockDepartments)
+      setLiveStreamsState(shouldRefresh ? mockLiveStreams : (storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams))
+      setPreachingsState(shouldRefresh ? mockPreachings : (storedPreachings ? JSON.parse(storedPreachings) : mockPreachings))
+      setChatMessagesState(shouldRefresh ? mockChatMessages : (storedChatMessages ? JSON.parse(storedChatMessages) : mockChatMessages))
       setPrayersState(storedPrayers ? JSON.parse(storedPrayers) : [])
       setDonationsState(storedDonations ? JSON.parse(storedDonations) : [])
       setContactInfoState(storedContactInfo ? JSON.parse(storedContactInfo) : null)
@@ -132,10 +148,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setEventSubscriptionsState(storedEventSubscriptions ? JSON.parse(storedEventSubscriptions) : [])
       setTestimoniesState(storedTestimonies ? JSON.parse(storedTestimonies) : [])
 
-      if (!storedMembers) localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
-      if (!storedEvents) localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
-      if (!storedAnnouncements) localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
-      if (!storedDepartments) localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
+      // Mettre à jour le localStorage avec les données fraîches
+      if (shouldRefresh) {
+        localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
+        localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
+        localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
+        localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
+        localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
+        localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
+        localStorage.setItem('eglizia_chat_messages', JSON.stringify(mockChatMessages))
+        localStorage.setItem('eglizia_version', dataVersion)
+      } else {
+        if (!storedMembers) localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
+        if (!storedEvents) localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
+        if (!storedAnnouncements) localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
+        localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
+        if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
+        if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
+        if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
+        if (!storedDonations) localStorage.setItem('eglizia_donations', JSON.stringify([]))
+        if (!storedContactInfo) localStorage.setItem('eglizia_contact', JSON.stringify(null))
+        if (!storedContactMessages) localStorage.setItem('eglizia_contact_messages', JSON.stringify([]))
+        if (!storedEventSubscriptions) localStorage.setItem('eglizia_event_subscriptions', JSON.stringify([]))
+        if (!storedTestimonies) localStorage.setItem('eglizia_testimonies', JSON.stringify([]))
+        if (!storedVersion) localStorage.setItem('eglizia_version', dataVersion)
+      }
       if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
       if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
       if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
@@ -334,6 +371,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setPreachings(preachings.filter(p => p.id !== id))
   }
 
+  // Chat Messages handlers
+  const setChatMessages = (newMessages: ChatMessage[]) => {
+    setChatMessagesState(newMessages)
+    try {
+      localStorage.setItem('eglizia_chat_messages', JSON.stringify(newMessages))
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error)
+    }
+  }
+
+  const addChatMessage = (message: ChatMessage) => {
+    setChatMessages([...chatMessages, message])
+  }
+
+  const deleteChatMessage = (id: string) => {
+    setChatMessages(chatMessages.filter(m => m.id !== id))
+  }
+
+  const getChatMessagesByStreamId = (streamId: string): ChatMessage[] => {
+    return chatMessages.filter(m => m.stream_id === streamId)
+  }
+
   // Prayer handlers
   const setPrayers = (newPrayers: PrayerRequest[]) => {
     setPrayersState(newPrayers)
@@ -465,6 +524,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     announcements, setAnnouncements, updateAnnouncement, addAnnouncement, deleteAnnouncement,
     departments, setDepartments, updateDepartment, addDepartment, deleteDepartment,
     liveStreams, setLiveStreams, updateLiveStream, addLiveStream, deleteLiveStream,
+    chatMessages, setChatMessages, addChatMessage, deleteChatMessage, getChatMessagesByStreamId,
     preachings, setPreachings, updatePreaching, addPreaching, deletePreaching,
     prayers, setPrayers, updatePrayer, addPrayer, deletePrayer,
     donations, setDonations, addDonation, deleteDonation, updateDonation,
