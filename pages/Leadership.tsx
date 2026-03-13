@@ -20,6 +20,28 @@ const MEMBER_ROLES: Record<string, string> = {
   'member': 'Membre',
 };
 
+function getRoleLabel(role?: string) {
+  if (!role) return 'Membre';
+
+  const key = role.toLowerCase();
+  if (MEMBER_ROLES[key]) return MEMBER_ROLES[key];
+
+  const cleaned = key
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z-]/g, '');
+
+  if (cleaned.includes('pasteurprincipal') || cleaned.includes('pastor')) {
+    return 'Pasteur Principal';
+  }
+
+  if (cleaned.includes('copasteur') || cleaned.includes('co-pastor')) {
+    return 'Co-Pasteure';
+  }
+
+  return MEMBER_ROLES.member;
+}
+
 export default function Leadership() {
   const { members } = useAppContext();
   useDebugMembers();
@@ -70,7 +92,7 @@ export default function Leadership() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.2 }}
-                className="group"
+                className="group text-center"
               >
                 <div className="relative mb-6 overflow-hidden rounded-3xl aspect-square bg-gradient-to-br from-[#1e3a5f] to-[#0f1f33] flex items-center justify-center">
                   {pastor.avatar_url ? (
@@ -95,7 +117,7 @@ export default function Leadership() {
                 <h3 className="text-2xl font-bold text-[#1e3a5f] mb-2">
                   {pastor.first_name} {pastor.last_name}
                 </h3>
-                <p className="text-[#d4af37] font-semibold mb-4">{MEMBER_ROLES[pastor.role]}</p>
+                <p className="text-[#d4af37] font-semibold mb-4 text-center">{getRoleLabel(pastor.role)}</p>
                 {pastor.bio && (
                   <p className="text-gray-600 text-sm">{pastor.bio}</p>
                 )}
@@ -144,7 +166,7 @@ export default function Leadership() {
                 <h3 className="text-lg font-bold text-[#1e3a5f] mb-2">
                   {leader.first_name} {leader.last_name}
                 </h3>
-                <p className="text-[#d4af37] font-semibold text-sm mb-3">{MEMBER_ROLES[leader.role]}</p>
+                <p className="text-[#d4af37] font-semibold text-sm mb-3">{getRoleLabel(leader.role)}</p>
                 {leader.bio && (
                   <p className="text-gray-600 text-xs">{leader.bio}</p>
                 )}

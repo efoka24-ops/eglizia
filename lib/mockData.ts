@@ -197,7 +197,7 @@ export const mockLiveStreams: LiveStream[] = [
     id: '1',
     title: 'Service en Direct - Dimanche',
     description: 'Service principal du dimanche avec louange et prédication',
-    youtube_url: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+    youtube_url: 'https://youtu.be/Sv6Y91N0nDo?si=KL6xz9EoNPgjENxM',
     is_live: true,
     start_time: new Date().toISOString(),
     viewers_count: 1247,

@@ -236,12 +236,12 @@ export default function AdminMembers() {
                               setFormData({ ...formData, role: value })
                             }
                           >
-                            <SelectTrigger>
-                              <SelectValue />
+                            <SelectTrigger className="[&>span]:w-full [&>span]:pr-4 [&>span]:text-center">
+                              <SelectValue className="text-center" />
                             </SelectTrigger>
                             <SelectContent>
                               {MEMBER_ROLES.map(role => (
-                                <SelectItem key={role.value} value={role.value}>
+                                <SelectItem key={role.value} value={role.value} className="justify-center">
                                   {role.label}
                                 </SelectItem>
                               ))}
