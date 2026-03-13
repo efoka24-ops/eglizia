@@ -8,7 +8,7 @@ import { useAppContext } from '@/lib/AppContext';
 import { useDebugMembers } from '@/lib/useDebugMembers';
 
 const MEMBER_ROLES: Record<string, string> = {
-  'pastor': 'Pasteur Principal',
+  'pastor': 'Rév. Dr. Prophète — Pasteur Principal',
   'co-pastor': 'Co-Pasteure',
   'leader': 'Leader',
   'youth-leader': 'Responsable Jeunesse',
