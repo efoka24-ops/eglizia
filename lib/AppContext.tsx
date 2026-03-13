@@ -114,11 +114,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // Initialiser depuis localStorage au montage
   useEffect(() => {
     try {
-      // Version key pour forcer le rechargement des données mises à jour
-      const dataVersion = '2.0';
-      const storedVersion = localStorage.getItem('eglizia_version');
-      const shouldRefresh = storedVersion !== dataVersion;
-
       const storedMembers = localStorage.getItem('eglizia_members')
       const storedEvents = localStorage.getItem('eglizia_events')
       const storedAnnouncements = localStorage.getItem('eglizia_announcements')
@@ -133,14 +128,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const storedEventSubscriptions = localStorage.getItem('eglizia_event_subscriptions')
       const storedTestimonies = localStorage.getItem('eglizia_testimonies')
 
-      // Toujours charger les données fraîches si version a changé
-      setMembersState(shouldRefresh ? mockMembers : (storedMembers ? JSON.parse(storedMembers) : mockMembers))
-      setEventsState(shouldRefresh ? mockEvents : (storedEvents ? JSON.parse(storedEvents) : mockEvents))
-      setAnnouncementsState(shouldRefresh ? mockAnnouncements : (storedAnnouncements ? JSON.parse(storedAnnouncements) : mockAnnouncements))
-      setDepartmentsState(mockDepartments)
-      setLiveStreamsState(shouldRefresh ? mockLiveStreams : (storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams))
-      setPreachingsState(shouldRefresh ? mockPreachings : (storedPreachings ? JSON.parse(storedPreachings) : mockPreachings))
-      setChatMessagesState(shouldRefresh ? mockChatMessages : (storedChatMessages ? JSON.parse(storedChatMessages) : mockChatMessages))
+      // Toujours préserver les données utilisateur existantes dans localStorage
+      // Ne charger les données mock que si rien n'est stocké
+      setMembersState(storedMembers ? JSON.parse(storedMembers) : mockMembers)
+      setEventsState(storedEvents ? JSON.parse(storedEvents) : mockEvents)
+      setAnnouncementsState(storedAnnouncements ? JSON.parse(storedAnnouncements) : mockAnnouncements)
+      setDepartmentsState(storedDepartments ? JSON.parse(storedDepartments) : mockDepartments)
+      setLiveStreamsState(storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams)
+      setPreachingsState(storedPreachings ? JSON.parse(storedPreachings) : mockPreachings)
+      setChatMessagesState(storedChatMessages ? JSON.parse(storedChatMessages) : mockChatMessages)
       setPrayersState(storedPrayers ? JSON.parse(storedPrayers) : [])
       setDonationsState(storedDonations ? JSON.parse(storedDonations) : [])
       setContactInfoState(storedContactInfo ? JSON.parse(storedContactInfo) : null)
@@ -148,33 +144,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setEventSubscriptionsState(storedEventSubscriptions ? JSON.parse(storedEventSubscriptions) : [])
       setTestimoniesState(storedTestimonies ? JSON.parse(storedTestimonies) : [])
 
-      // Mettre à jour le localStorage avec les données fraîches
-      if (shouldRefresh) {
-        localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
-        localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
-        localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
-        localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
-        localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
-        localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
-        localStorage.setItem('eglizia_chat_messages', JSON.stringify(mockChatMessages))
-        localStorage.setItem('eglizia_version', dataVersion)
-      } else {
-        if (!storedMembers) localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
-        if (!storedEvents) localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
-        if (!storedAnnouncements) localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
-        localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
-        if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
-        if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
-        if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
-        if (!storedDonations) localStorage.setItem('eglizia_donations', JSON.stringify([]))
-        if (!storedContactInfo) localStorage.setItem('eglizia_contact', JSON.stringify(null))
-        if (!storedContactMessages) localStorage.setItem('eglizia_contact_messages', JSON.stringify([]))
-        if (!storedEventSubscriptions) localStorage.setItem('eglizia_event_subscriptions', JSON.stringify([]))
-        if (!storedTestimonies) localStorage.setItem('eglizia_testimonies', JSON.stringify([]))
-        if (!storedVersion) localStorage.setItem('eglizia_version', dataVersion)
-      }
+      // Initialiser le localStorage uniquement pour les clés manquantes
+      if (!storedMembers) localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
+      if (!storedEvents) localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
+      if (!storedAnnouncements) localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
+      if (!storedDepartments) localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
       if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
       if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
+      if (!storedChatMessages) localStorage.setItem('eglizia_chat_messages', JSON.stringify(mockChatMessages))
       if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
       if (!storedDonations) localStorage.setItem('eglizia_donations', JSON.stringify([]))
       if (!storedContactInfo) localStorage.setItem('eglizia_contact', JSON.stringify(null))
