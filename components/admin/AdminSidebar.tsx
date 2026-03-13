@@ -19,7 +19,6 @@ import {
   Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { base44 } from '@/api/base44Client';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Tableau de bord', page: 'Dashboard' },
@@ -42,10 +41,10 @@ export default function AdminSidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const handleLogout = async () => {
-    await base44.auth.logout();
+  const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminEmail');
+    window.location.href = '/';
   };
 
   return (

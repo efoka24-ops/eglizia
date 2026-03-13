@@ -115,11 +115,6 @@ export default function Dons() {
         donation.reference = reference;
         donation.status = 'campay_initiated';
 
-        // Save to localStorage
-        const donations = JSON.parse(localStorage.getItem('eglizia_donations') || '[]');
-        donations.push(donation);
-        localStorage.setItem('eglizia_donations', JSON.stringify(donations));
-
         // Add donation to context
         addDonation(donation);
 

@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import { mockMembers, mockEvents, mockAnnouncements, mockDepartments, mockLiveStreams, mockPreachings, mockChatMessages } from '@/lib/mockData'
-import { base44 } from '@/api/base44Client'
 import type { Member, Event, Announcement, Department, LiveStream, Preaching, PrayerRequest, ContactInfo, ContactMessage, EventSubscription, Testimony, ChatMessage } from '@/entities'
 
 interface AppContextType {
@@ -95,404 +94,124 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
+// Architecture simple : les données viennent directement de mockData.ts
+// Pour modifier les données visibles par tous, modifier mockData.ts et redéployer.
+// L'admin permet des modifications en session (mémoire) mais les données
+// permanentes sont dans le code.
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [members, setMembersState] = useState<Member[]>([])
-  const [events, setEventsState] = useState<Event[]>([])
-  const [announcements, setAnnouncementsState] = useState<Announcement[]>([])
-  const [departments, setDepartmentsState] = useState<Department[]>([])
-  const [liveStreams, setLiveStreamsState] = useState<LiveStream[]>([])
-  const [preachings, setPreachingsState] = useState<Preaching[]>([])
-  const [chatMessages, setChatMessagesState] = useState<ChatMessage[]>([])
+  // Initialisation directe depuis mockData — pas de localStorage, pas d'API
+  const [members, setMembersState] = useState<Member[]>(mockMembers)
+  const [events, setEventsState] = useState<Event[]>(mockEvents)
+  const [announcements, setAnnouncementsState] = useState<Announcement[]>(mockAnnouncements)
+  const [departments, setDepartmentsState] = useState<Department[]>(mockDepartments)
+  const [liveStreams, setLiveStreamsState] = useState<LiveStream[]>(mockLiveStreams)
+  const [preachings, setPreachingsState] = useState<Preaching[]>(mockPreachings)
+  const [chatMessages, setChatMessagesState] = useState<ChatMessage[]>(mockChatMessages)
   const [prayers, setPrayersState] = useState<PrayerRequest[]>([])
   const [donations, setDonationsState] = useState<any[]>([])
   const [contactInfo, setContactInfoState] = useState<ContactInfo | null>(null)
   const [contactMessages, setContactMessagesState] = useState<ContactMessage[]>([])
   const [eventSubscriptions, setEventSubscriptionsState] = useState<EventSubscription[]>([])
   const [testimonies, setTestimoniesState] = useState<Testimony[]>([])
-  const [isHydrated, setIsHydrated] = useState(false)
-
-  // Initialiser depuis localStorage au montage
-  useEffect(() => {
-    try {
-      const storedMembers = localStorage.getItem('eglizia_members')
-      const storedEvents = localStorage.getItem('eglizia_events')
-      const storedAnnouncements = localStorage.getItem('eglizia_announcements')
-      const storedDepartments = localStorage.getItem('eglizia_departments')
-      const storedLiveStreams = localStorage.getItem('eglizia_livestreams')
-      const storedPreachings = localStorage.getItem('eglizia_preachings')
-      const storedChatMessages = localStorage.getItem('eglizia_chat_messages')
-      const storedPrayers = localStorage.getItem('eglizia_prayers')
-      const storedDonations = localStorage.getItem('eglizia_donations')
-      const storedContactInfo = localStorage.getItem('eglizia_contact')
-      const storedContactMessages = localStorage.getItem('eglizia_contact_messages')
-      const storedEventSubscriptions = localStorage.getItem('eglizia_event_subscriptions')
-      const storedTestimonies = localStorage.getItem('eglizia_testimonies')
-
-      // Toujours préserver les données utilisateur existantes dans localStorage
-      // Ne charger les données mock que si rien n'est stocké
-      setMembersState(storedMembers ? JSON.parse(storedMembers) : mockMembers)
-      setEventsState(storedEvents ? JSON.parse(storedEvents) : mockEvents)
-      setAnnouncementsState(storedAnnouncements ? JSON.parse(storedAnnouncements) : mockAnnouncements)
-      setDepartmentsState(storedDepartments ? JSON.parse(storedDepartments) : mockDepartments)
-      setLiveStreamsState(storedLiveStreams ? JSON.parse(storedLiveStreams) : mockLiveStreams)
-      setPreachingsState(storedPreachings ? JSON.parse(storedPreachings) : mockPreachings)
-      setChatMessagesState(storedChatMessages ? JSON.parse(storedChatMessages) : mockChatMessages)
-      setPrayersState(storedPrayers ? JSON.parse(storedPrayers) : [])
-      setDonationsState(storedDonations ? JSON.parse(storedDonations) : [])
-      setContactInfoState(storedContactInfo ? JSON.parse(storedContactInfo) : null)
-      setContactMessagesState(storedContactMessages ? JSON.parse(storedContactMessages) : [])
-      setEventSubscriptionsState(storedEventSubscriptions ? JSON.parse(storedEventSubscriptions) : [])
-      setTestimoniesState(storedTestimonies ? JSON.parse(storedTestimonies) : [])
-
-      // Initialiser le localStorage uniquement pour les clés manquantes
-      if (!storedMembers) localStorage.setItem('eglizia_members', JSON.stringify(mockMembers))
-      if (!storedEvents) localStorage.setItem('eglizia_events', JSON.stringify(mockEvents))
-      if (!storedAnnouncements) localStorage.setItem('eglizia_announcements', JSON.stringify(mockAnnouncements))
-      if (!storedDepartments) localStorage.setItem('eglizia_departments', JSON.stringify(mockDepartments))
-      if (!storedLiveStreams) localStorage.setItem('eglizia_livestreams', JSON.stringify(mockLiveStreams))
-      if (!storedPreachings) localStorage.setItem('eglizia_preachings', JSON.stringify(mockPreachings))
-      if (!storedChatMessages) localStorage.setItem('eglizia_chat_messages', JSON.stringify(mockChatMessages))
-      if (!storedPrayers) localStorage.setItem('eglizia_prayers', JSON.stringify([]))
-      if (!storedDonations) localStorage.setItem('eglizia_donations', JSON.stringify([]))
-      if (!storedContactInfo) localStorage.setItem('eglizia_contact', JSON.stringify(null))
-      if (!storedContactMessages) localStorage.setItem('eglizia_contact_messages', JSON.stringify([]))
-      if (!storedEventSubscriptions) localStorage.setItem('eglizia_event_subscriptions', JSON.stringify([]))
-      if (!storedTestimonies) localStorage.setItem('eglizia_testimonies', JSON.stringify([]))
-    } catch (error) {
-      console.error('Erreur lors du chargement des données:', error)
-      setMembersState(mockMembers)
-      setEventsState(mockEvents)
-      setAnnouncementsState(mockAnnouncements)
-      setDepartmentsState(mockDepartments)
-      setLiveStreamsState(mockLiveStreams)
-      setPreachingsState(mockPreachings)
-      setPrayersState([])
-      setContactInfoState(null)
-    }
-    setIsHydrated(true)
-  }, [])
-
-  // Fetch data from API with retry logic
-  useEffect(() => {
-    if (!isHydrated) return
-
-    const fetchAPIData = async () => {
-      // Small delay to ensure localStorage is ready
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      try {
-        // Fetch prayer requests from API
-        const prayersData = await base44.entities.PrayerRequest.list()
-        
-        const prayersList = Array.isArray(prayersData) ? prayersData : (prayersData.data || prayersData.prayer_requests || [])
-        if (Array.isArray(prayersList) && prayersList.length > 0) {
-          setPrayersState(prayersList)
-          localStorage.setItem('eglizia_prayers', JSON.stringify(prayersList))
-        }
-      } catch (error) {
-        console.warn('API unavailable for prayer requests, using cached data')
-      }
-
-      try {
-        // Fetch events from API
-        const eventsData = await base44.entities.Event.list()
-        
-        const eventsList = Array.isArray(eventsData) ? eventsData : (eventsData.data || eventsData.events || [])
-        if (Array.isArray(eventsList) && eventsList.length > 0) {
-          setEventsState(eventsList)
-          localStorage.setItem('eglizia_events', JSON.stringify(eventsList))
-        }
-      } catch (error) {
-        console.warn('API unavailable for events, using cached data')
-      }
-    }
-
-    fetchAPIData()
-  }, [isHydrated])
 
   // Members handlers
-  const setMembers = (newMembers: Member[]) => {
-    setMembersState(newMembers)
-    try {
-      localStorage.setItem('eglizia_members', JSON.stringify(newMembers))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setMembers = (newMembers: Member[]) => setMembersState(newMembers)
   const updateMember = (id: string, updates: Partial<Member>) => {
-    const newMembers = members.map(m => (m.id === id ? { ...m, ...updates } : m))
-    setMembers(newMembers)
+    setMembersState(prev => prev.map(m => (m.id === id ? { ...m, ...updates } : m)))
   }
-
-  const addMember = (member: Member) => {
-    setMembers([...members, member])
-  }
-
-  const deleteMember = (id: string) => {
-    setMembers(members.filter(m => m.id !== id))
-  }
+  const addMember = (member: Member) => setMembersState(prev => [...prev, member])
+  const deleteMember = (id: string) => setMembersState(prev => prev.filter(m => m.id !== id))
 
   // Events handlers
-  const setEvents = (newEvents: Event[]) => {
-    setEventsState(newEvents)
-    try {
-      localStorage.setItem('eglizia_events', JSON.stringify(newEvents))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setEvents = (newEvents: Event[]) => setEventsState(newEvents)
   const updateEvent = (id: string, updates: Partial<Event>) => {
-    const newEvents = events.map(e => (e.id === id ? { ...e, ...updates } : e))
-    setEvents(newEvents)
+    setEventsState(prev => prev.map(e => (e.id === id ? { ...e, ...updates } : e)))
   }
-
-  const addEvent = (event: Event) => {
-    setEvents([...events, event])
-  }
-
-  const deleteEvent = (id: string) => {
-    setEvents(events.filter(e => e.id !== id))
-  }
+  const addEvent = (event: Event) => setEventsState(prev => [...prev, event])
+  const deleteEvent = (id: string) => setEventsState(prev => prev.filter(e => e.id !== id))
 
   // Announcements handlers
-  const setAnnouncements = (newAnnouncements: Announcement[]) => {
-    setAnnouncementsState(newAnnouncements)
-    try {
-      localStorage.setItem('eglizia_announcements', JSON.stringify(newAnnouncements))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setAnnouncements = (newAnnouncements: Announcement[]) => setAnnouncementsState(newAnnouncements)
   const updateAnnouncement = (id: string, updates: Partial<Announcement>) => {
-    const newAnnouncements = announcements.map(a => (a.id === id ? { ...a, ...updates } : a))
-    setAnnouncements(newAnnouncements)
+    setAnnouncementsState(prev => prev.map(a => (a.id === id ? { ...a, ...updates } : a)))
   }
-
-  const addAnnouncement = (announcement: Announcement) => {
-    setAnnouncements([...announcements, announcement])
-  }
-
-  const deleteAnnouncement = (id: string) => {
-    setAnnouncements(announcements.filter(a => a.id !== id))
-  }
+  const addAnnouncement = (announcement: Announcement) => setAnnouncementsState(prev => [...prev, announcement])
+  const deleteAnnouncement = (id: string) => setAnnouncementsState(prev => prev.filter(a => a.id !== id))
 
   // Departments handlers
-  const setDepartments = (newDepartments: Department[]) => {
-    setDepartmentsState(newDepartments)
-    try {
-      localStorage.setItem('eglizia_departments', JSON.stringify(newDepartments))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setDepartments = (newDepartments: Department[]) => setDepartmentsState(newDepartments)
   const updateDepartment = (id: string, updates: Partial<Department>) => {
-    const newDepartments = departments.map(d => (d.id === id ? { ...d, ...updates } : d))
-    setDepartments(newDepartments)
+    setDepartmentsState(prev => prev.map(d => (d.id === id ? { ...d, ...updates } : d)))
   }
-
-  const addDepartment = (department: Department) => {
-    setDepartments([...departments, department])
-  }
-
-  const deleteDepartment = (id: string) => {
-    setDepartments(departments.filter(d => d.id !== id))
-  }
+  const addDepartment = (department: Department) => setDepartmentsState(prev => [...prev, department])
+  const deleteDepartment = (id: string) => setDepartmentsState(prev => prev.filter(d => d.id !== id))
 
   // Live Streams handlers
-  const setLiveStreams = (newLiveStreams: LiveStream[]) => {
-    setLiveStreamsState(newLiveStreams)
-    try {
-      localStorage.setItem('eglizia_livestreams', JSON.stringify(newLiveStreams))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setLiveStreams = (newLiveStreams: LiveStream[]) => setLiveStreamsState(newLiveStreams)
   const updateLiveStream = (id: string, updates: Partial<LiveStream>) => {
-    const newLiveStreams = liveStreams.map(l => (l.id === id ? { ...l, ...updates } : l))
-    setLiveStreams(newLiveStreams)
+    setLiveStreamsState(prev => prev.map(l => (l.id === id ? { ...l, ...updates } : l)))
   }
-
-  const addLiveStream = (liveStream: LiveStream) => {
-    setLiveStreams([...liveStreams, liveStream])
-  }
-
-  const deleteLiveStream = (id: string) => {
-    setLiveStreams(liveStreams.filter(l => l.id !== id))
-  }
+  const addLiveStream = (liveStream: LiveStream) => setLiveStreamsState(prev => [...prev, liveStream])
+  const deleteLiveStream = (id: string) => setLiveStreamsState(prev => prev.filter(l => l.id !== id))
 
   // Preachings handlers
-  const setPreachings = (newPreachings: Preaching[]) => {
-    setPreachingsState(newPreachings)
-    try {
-      localStorage.setItem('eglizia_preachings', JSON.stringify(newPreachings))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setPreachings = (newPreachings: Preaching[]) => setPreachingsState(newPreachings)
   const updatePreaching = (id: string, updates: Partial<Preaching>) => {
-    const newPreachings = preachings.map(p => (p.id === id ? { ...p, ...updates } : p))
-    setPreachings(newPreachings)
+    setPreachingsState(prev => prev.map(p => (p.id === id ? { ...p, ...updates } : p)))
   }
-
-  const addPreaching = (preaching: Preaching) => {
-    setPreachings([...preachings, preaching])
-  }
-
-  const deletePreaching = (id: string) => {
-    setPreachings(preachings.filter(p => p.id !== id))
-  }
+  const addPreaching = (preaching: Preaching) => setPreachingsState(prev => [...prev, preaching])
+  const deletePreaching = (id: string) => setPreachingsState(prev => prev.filter(p => p.id !== id))
 
   // Chat Messages handlers
-  const setChatMessages = (newMessages: ChatMessage[]) => {
-    setChatMessagesState(newMessages)
-    try {
-      localStorage.setItem('eglizia_chat_messages', JSON.stringify(newMessages))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
-  const addChatMessage = (message: ChatMessage) => {
-    setChatMessages([...chatMessages, message])
-  }
-
-  const deleteChatMessage = (id: string) => {
-    setChatMessages(chatMessages.filter(m => m.id !== id))
-  }
-
+  const setChatMessages = (newMessages: ChatMessage[]) => setChatMessagesState(newMessages)
+  const addChatMessage = (message: ChatMessage) => setChatMessagesState(prev => [...prev, message])
+  const deleteChatMessage = (id: string) => setChatMessagesState(prev => prev.filter(m => m.id !== id))
   const getChatMessagesByStreamId = (streamId: string): ChatMessage[] => {
     return chatMessages.filter(m => m.stream_id === streamId)
   }
 
   // Prayer handlers
-  const setPrayers = (newPrayers: PrayerRequest[]) => {
-    setPrayersState(newPrayers)
-    try {
-      localStorage.setItem('eglizia_prayers', JSON.stringify(newPrayers))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
+  const setPrayers = (newPrayers: PrayerRequest[]) => setPrayersState(newPrayers)
   const updatePrayer = (id: string, updates: Partial<PrayerRequest>) => {
-    const newPrayers = prayers.map(p => (p.id === id ? { ...p, ...updates } : p))
-    setPrayers(newPrayers)
+    setPrayersState(prev => prev.map(p => (p.id === id ? { ...p, ...updates } : p)))
   }
-
-  const addPrayer = (prayer: PrayerRequest) => {
-    setPrayers([...prayers, prayer])
-  }
-
-  const deletePrayer = (id: string) => {
-    setPrayers(prayers.filter(p => p.id !== id))
-  }
+  const addPrayer = (prayer: PrayerRequest) => setPrayersState(prev => [...prev, prayer])
+  const deletePrayer = (id: string) => setPrayersState(prev => prev.filter(p => p.id !== id))
 
   // Contact handlers
-  const setContactInfo = (info: ContactInfo) => {
-    setContactInfoState(info)
-    try {
-      localStorage.setItem('eglizia_contact', JSON.stringify(info))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
+  const setContactInfo = (info: ContactInfo) => setContactInfoState(info)
 
   // Contact Messages handlers
-  const setContactMessages = (messages: ContactMessage[]) => {
-    setContactMessagesState(messages)
-    try {
-      localStorage.setItem('eglizia_contact_messages', JSON.stringify(messages))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
-  const addContactMessage = (message: ContactMessage) => {
-    setContactMessages([...contactMessages, message])
-  }
-
-  const deleteContactMessage = (id: string) => {
-    setContactMessages(contactMessages.filter(m => m.id !== id))
-  }
-
+  const setContactMessages = (messages: ContactMessage[]) => setContactMessagesState(messages)
+  const addContactMessage = (message: ContactMessage) => setContactMessagesState(prev => [...prev, message])
+  const deleteContactMessage = (id: string) => setContactMessagesState(prev => prev.filter(m => m.id !== id))
   const updateContactMessage = (id: string, updates: Partial<ContactMessage>) => {
-    const newMessages = contactMessages.map(m => (m.id === id ? { ...m, ...updates } : m))
-    setContactMessages(newMessages)
+    setContactMessagesState(prev => prev.map(m => (m.id === id ? { ...m, ...updates } : m)))
   }
 
   // Event Subscriptions handlers
-  const setEventSubscriptions = (subscriptions: EventSubscription[]) => {
-    setEventSubscriptionsState(subscriptions)
-    try {
-      localStorage.setItem('eglizia_event_subscriptions', JSON.stringify(subscriptions))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
-  const addEventSubscription = (subscription: EventSubscription) => {
-    setEventSubscriptions([...eventSubscriptions, subscription])
-  }
-
-  const deleteEventSubscription = (id: string) => {
-    setEventSubscriptions(eventSubscriptions.filter(s => s.id !== id))
-  }
-
+  const setEventSubscriptions = (subscriptions: EventSubscription[]) => setEventSubscriptionsState(subscriptions)
+  const addEventSubscription = (subscription: EventSubscription) => setEventSubscriptionsState(prev => [...prev, subscription])
+  const deleteEventSubscription = (id: string) => setEventSubscriptionsState(prev => prev.filter(s => s.id !== id))
   const updateEventSubscription = (id: string, updates: Partial<EventSubscription>) => {
-    const newSubscriptions = eventSubscriptions.map(s => (s.id === id ? { ...s, ...updates } : s))
-    setEventSubscriptions(newSubscriptions)
+    setEventSubscriptionsState(prev => prev.map(s => (s.id === id ? { ...s, ...updates } : s)))
   }
 
   // Testimonies handlers
-  const setTestimonies = (testimonies: Testimony[]) => {
-    setTestimoniesState(testimonies)
-    try {
-      localStorage.setItem('eglizia_testimonies', JSON.stringify(testimonies))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
-  const addTestimony = (testimony: Testimony) => {
-    setTestimonies([...testimonies, testimony])
-  }
-
-  const deleteTestimony = (id: string) => {
-    setTestimonies(testimonies.filter(t => t.id !== id))
-  }
-
+  const setTestimonies = (testimonies: Testimony[]) => setTestimoniesState(testimonies)
+  const addTestimony = (testimony: Testimony) => setTestimoniesState(prev => [...prev, testimony])
+  const deleteTestimony = (id: string) => setTestimoniesState(prev => prev.filter(t => t.id !== id))
   const updateTestimony = (id: string, updates: Partial<Testimony>) => {
-    const newTestimonies = testimonies.map(t => (t.id === id ? { ...t, ...updates } : t))
-    setTestimonies(newTestimonies)
+    setTestimoniesState(prev => prev.map(t => (t.id === id ? { ...t, ...updates } : t)))
   }
 
   // Donations handlers
-  const setDonations = (newDonations: any[]) => {
-    setDonationsState(newDonations)
-    try {
-      localStorage.setItem('eglizia_donations', JSON.stringify(newDonations))
-    } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error)
-    }
-  }
-
-  const addDonation = (donation: any) => {
-    setDonations([...donations, donation])
-  }
-
-  const deleteDonation = (id: string) => {
-    setDonations(donations.filter(d => d.id !== id))
-  }
-
+  const setDonations = (newDonations: any[]) => setDonationsState(newDonations)
+  const addDonation = (donation: any) => setDonationsState(prev => [...prev, donation])
+  const deleteDonation = (id: string) => setDonationsState(prev => prev.filter(d => d.id !== id))
   const updateDonation = (id: string, updates: Partial<any>) => {
-    const newDonations = donations.map(d => (d.id === id ? { ...d, ...updates } : d))
-    setDonations(newDonations)
+    setDonationsState(prev => prev.map(d => (d.id === id ? { ...d, ...updates } : d)))
   }
 
   const value: AppContextType = {
@@ -513,7 +232,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AppContext.Provider value={value}>
-      {isHydrated ? children : <></>}
+      {children}
     </AppContext.Provider>
   )
 }
