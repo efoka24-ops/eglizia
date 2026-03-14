@@ -10,7 +10,7 @@ import { useDebugMembers } from '@/lib/useDebugMembers';
 const MEMBER_ROLES: Record<string, string> = {
   'pastor': 'Rév. Dr. Prophète — Pasteur Principal',
   'co-pastor': 'Co-Pasteure',
-  'leader': 'Leader',
+  'leader': 'Pasteur',
   'youth-leader': 'Responsable Jeunesse',
   'women-leader': 'Responsable Femmes',
   'men-leader': 'Responsable Hommes',
